@@ -1,14 +1,15 @@
 package net.daergoth.homewire;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -17,6 +18,9 @@ public class NetworkServer extends Thread {
 
   @Autowired
   private SensorDataRepository sensorDataRepository;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   private ServerSocket serverSocket;
 
@@ -29,20 +33,21 @@ public class NetworkServer extends Thread {
   @Override
   public void run() {
 
-    System.out.println("Waiting for network connector to connect on port " + serverSocket.getLocalPort() + "...");
+    System.out.println(
+        "Waiting for network connector to connect on port " + serverSocket.getLocalPort() + "...");
 
     try (Socket clientSocket = serverSocket.accept()) {
 
       System.out.println("Just connected to " + clientSocket.getRemoteSocketAddress());
       DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+      BufferedReader d = new BufferedReader(new InputStreamReader(in));
 
       while (isRunning) {
-        byte[] buffer = new byte[128];
-        if (in.read(buffer) > 0) {
-          ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
-          byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-          handleIncomingData(byteBuffer.getFloat());
-        }
+        String dataJson = d.readLine();
+
+        System.out.println("Incoming JSON: " + dataJson);
+
+        handleIncomingData(objectMapper.readValue(dataJson, SensorData.class));
       }
 
     } catch (IOException e) {
@@ -52,9 +57,11 @@ public class NetworkServer extends Thread {
 
   }
 
-  private void handleIncomingData(Float data) {
+  private void handleIncomingData(SensorData data) {
     System.out.println("Received data: " + data);
-    sensorDataRepository.addData(new SensorDataEntity<>(data, Date.from(ZonedDateTime.now().toInstant())));
+    sensorDataRepository
+        .addData(new SensorDataEntity<>(data.getId(), data.getType(), data.getValue(),
+            Date.from(ZonedDateTime.now().toInstant())));
   }
 
 }

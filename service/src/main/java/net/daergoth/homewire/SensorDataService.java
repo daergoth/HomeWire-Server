@@ -18,7 +18,7 @@ public class SensorDataService {
 
   public List<SensorDataDTO<?>> getSensorData() {
     return sensorDataRepository.getSensorData().stream()
-        .map(e -> new SensorDataDTO<>(e.getData(), e.getTime()))
+        .map(e -> new SensorDataDTO<>(e.getId(), e.getType(), e.getValue(), e.getTime()))
         .collect(Collectors.toList());
   }
 

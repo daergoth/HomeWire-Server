@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public class SensorDataRepository {
 
+  private static final int LIMIT = 10;
+
   private List<SensorDataEntity<?>> dataList;
 
   public SensorDataRepository() {
@@ -21,5 +23,9 @@ public class SensorDataRepository {
 
   public void addData(SensorDataEntity<?> data) {
     dataList.add(data);
+
+    if (dataList.size() > LIMIT) {
+      dataList.remove(0);
+    }
   }
 }
