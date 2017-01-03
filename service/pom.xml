@@ -17,6 +17,12 @@
             <artifactId>persistence</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>0.7.7</version>
+        </dependency>
     </dependencies>
 
 </project>

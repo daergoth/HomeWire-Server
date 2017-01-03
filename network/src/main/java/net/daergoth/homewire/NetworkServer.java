@@ -1,6 +1,9 @@
 package net.daergoth.homewire;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.daergoth.homewire.processing.ProcessableSensorDataDTO;
+import net.daergoth.homewire.processing.SensorProcessingService;
+import net.daergoth.homewire.statistic.StatisticDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,28 +14,34 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Component
 public class NetworkServer extends Thread {
 
-  @Autowired
-  private SensorDataRepository sensorDataRepository;
+  private final StatisticDataRepository statisticDataRepository;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
+
+  private final SensorProcessingService processingService;
 
   private ServerSocket serverSocket;
 
   private boolean isRunning = true;
 
-  public NetworkServer() throws IOException {
+  @Autowired
+  public NetworkServer(StatisticDataRepository statisticDataRepository,
+                       ObjectMapper objectMapper,
+                       SensorProcessingService processingService) throws IOException {
+    this.statisticDataRepository = statisticDataRepository;
+    this.objectMapper = objectMapper;
+    this.processingService = processingService;
+
     serverSocket = new ServerSocket(45678);
   }
 
+
   @Override
   public void run() {
-
     System.out.println(
         "Waiting for network connector to connect on port " + serverSocket.getLocalPort() + "...");
 
@@ -58,10 +67,11 @@ public class NetworkServer extends Thread {
   }
 
   private void handleIncomingData(SensorData data) {
-    System.out.println("Received data: " + data);
-    sensorDataRepository
-        .addData(new SensorDataEntity<>(data.getId(), data.getType(), data.getValue(),
-            Date.from(ZonedDateTime.now().toInstant())));
+    processingService.processSensorData(
+        new ProcessableSensorDataDTO(data.getId(),
+            data.getType(),
+            data.getValue(),
+            ZonedDateTime.now()));
   }
 
 }
