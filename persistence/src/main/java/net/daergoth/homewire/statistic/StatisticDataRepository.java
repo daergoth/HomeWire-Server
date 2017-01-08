@@ -1,20 +1,30 @@
 package net.daergoth.homewire.statistic;
 
-import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
 import com.mongodb.client.MongoDatabase;
 import net.daergoth.homewire.CustomMongoRepository;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public class StatisticDataRepository extends CustomMongoRepository {
 
   private static final String COLLECTION_NAME = "statistic_data";
+
+  private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
   @Autowired
   public StatisticDataRepository(MongoDatabase db) {
@@ -27,41 +37,189 @@ public class StatisticDataRepository extends CustomMongoRepository {
   }
 
   public void saveSensorData(SensorMeasurementEntity sensorMeasurementEntity) {
-    ZonedDateTime hour = sensorMeasurementEntity.getTime().truncatedTo(ChronoUnit.HOURS);
+    LocalDateTime hour =
+        sensorMeasurementEntity.getTime().toLocalDateTime().truncatedTo(ChronoUnit.HOURS);
 
     Document query = new Document()
         .append("dev_id", sensorMeasurementEntity.getId())
-        .append("date_hour", Date.from(hour.toInstant()))
+        .append("date_hour", Date.from(hour.toInstant(ZoneOffset.UTC)))
         .append("type", sensorMeasurementEntity.getType());
 
     if (collection.count(query) > 0) {
-      BasicDBObject updated = new BasicDBObject()
-          .append("$inc",
-              new BasicDBObject()
-                  .append(
-                      "values." + String.valueOf(sensorMeasurementEntity.getTime().getMinute())
-                          + ".num",
-                      1)
-                  .append(
-                      "values." + String.valueOf(sensorMeasurementEntity.getTime().getMinute())
-                          + ".sum",
-                      sensorMeasurementEntity.getValue())
-          );
+      Document arrayQuery = new Document(query)
+          .append("values.minute", sensorMeasurementEntity.getTime().getMinute());
 
-      collection.updateOne(query, updated);
+      if (collection.count(arrayQuery) > 0) {
+        Document updated = new Document()
+            .append("$inc", new Document()
+                .append("values.$.num", 1)
+                .append("values.$.sum", sensorMeasurementEntity.getValue())
+            );
+
+        collection.updateOne(arrayQuery, updated);
+
+      } else {
+        Document arrayElement = new Document()
+            .append("$push", new Document()
+                .append("values", new Document()
+                    .append("minute", sensorMeasurementEntity.getTime().getMinute())
+                    .append("num", 1)
+                    .append("sum", sensorMeasurementEntity.getValue())
+                )
+            );
+
+        collection.updateOne(query, arrayElement);
+      }
+
     } else {
       Document newDocument = new Document()
           .append("dev_id", sensorMeasurementEntity.getId())
-          .append("date_hour", Date.from(hour.toInstant()))
+          .append("date_hour", Date.from(hour.toInstant(ZoneOffset.UTC)))
           .append("type", sensorMeasurementEntity.getType())
           .append("values",
-              new BasicDBObject(String.valueOf(sensorMeasurementEntity.getTime().getMinute()),
-                  new BasicDBObject("num", 1)
-                      .append("sum", sensorMeasurementEntity.getValue())
+              Collections.singletonList(new Document()
+                  .append("minute", sensorMeasurementEntity.getTime().getMinute())
+                  .append("num", 1)
+                  .append("sum", sensorMeasurementEntity.getValue())
               )
           );
+
       collection.insertOne(newDocument);
     }
+  }
+
+  public List<SensorMeasurementEntity> getSensorDataWithInterval(
+      String sensorType,
+      SensorMeasurementEntity.MeasurementInterval measurementInterval) {
+
+    List<SensorMeasurementEntity> result = new ArrayList<>();
+
+    List<Document> aggregateDocument = new ArrayList<>();
+
+    switch (measurementInterval) {
+      case CURRENT:
+      case MINUTE:
+        aggregateDocument = Arrays.asList(
+            new Document()
+                .append("$match", new Document("type", sensorType)),
+            new Document()
+                .append("$unwind", "$values"),
+            new Document()
+                .append("$project", new Document()
+                    .append("_id", 0)
+                    .append("dev_id", 1)
+                    .append("date", new Document()
+                        .append("$add", Arrays.asList(
+                            "$date_hour",
+                            new Document()
+                                .append("$multiply", Arrays.asList(
+                                    "$values.minute",
+                                    60000
+                                ))
+                        ))
+                    )
+                    .append("ave", new Document()
+                        .append("$divide", Arrays.asList(
+                            "$values.sum",
+                            "$values.num"
+                        ))
+                    )
+                ),
+            new Document()
+                .append("$sort", new Document("date", 1))
+        );
+        break;
+      case HOUR:
+        aggregateDocument = Arrays.asList(
+            new Document()
+                .append("$match", new Document("type", sensorType)),
+            new Document()
+                .append("$project", new Document()
+                    .append("_id", 0)
+                    .append("dev_id", 1)
+                    .append("date", "$date_hour")
+                    .append("ave", new Document()
+                        .append("$avg", new Document()
+                            .append("$map", new Document()
+                                .append("input", "$values")
+                                .append("as", "value")
+                                .append("in", new Document()
+                                    .append("$divide", Arrays.asList(
+                                        "$$value.sum",
+                                        "$$value.num"
+                                    ))
+                                )
+                            )
+                        )
+                    )
+                ),
+            new Document()
+                .append("$sort", new Document("date", 1))
+        );
+        break;
+      case DAY:
+        aggregateDocument = Arrays.asList(
+            new Document()
+                .append("$match", new Document()
+                    .append("type", sensorType)
+                ),
+            new Document()
+                .append("$project", new Document()
+                    .append("_id", 0)
+                    .append("dev_id", 1)
+                    .append("date", new Document()
+                        .append("$subtract", Arrays.asList(
+                            "$date_hour",
+                            new Document()
+                                .append("$multiply", Arrays.asList(
+                                    new Document("$hour", "$date_hour"),
+                                    60,
+                                    60000
+                                ))
+                        ))
+                    )
+                    .append("ave", new Document()
+                        .append("$divide", Arrays.asList(
+                            new Document("$sum", "$values.sum"),
+                            new Document("$sum", "$values.num")
+                        ))
+                    )
+                ),
+            new Document()
+                .append("$group", new Document()
+                    .append("_id", new Document()
+                        .append("date", "$date")
+                        .append("dev_id", "$dev_id")
+                    )
+                    .append("ave", new Document("$avg", "$ave"))
+                ),
+            new Document()
+                .append("$project", new Document()
+                    .append("_id", 0)
+                    .append("dev_id", "$_id.dev_id")
+                    .append("date", "$_id.date")
+                    .append("ave", "$ave")
+                ),
+            new Document()
+                .append("$sort", new Document("date", 1))
+        );
+        break;
+    }
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+
+    collection.aggregate(aggregateDocument)
+        .forEach((Block<? super Document>) document -> result.add(new SensorMeasurementEntity(
+            document.getInteger("dev_id").shortValue(),
+            sensorType,
+            document.getDouble("ave").floatValue(),
+            ZonedDateTime
+                .parse(dateFormat.format(document.getDate("date")), dateTimeFormatter),
+            measurementInterval)
+        ));
+
+    return result;
   }
 
 }

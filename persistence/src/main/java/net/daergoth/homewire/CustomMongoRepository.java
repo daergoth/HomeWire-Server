@@ -3,6 +3,7 @@ package net.daergoth.homewire;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import net.daergoth.homewire.setup.SensorEntity;
 import org.bson.Document;
 
 public abstract class CustomMongoRepository {
@@ -14,5 +15,6 @@ public abstract class CustomMongoRepository {
   }
 
   protected abstract String getCollectionName();
+
 
 }

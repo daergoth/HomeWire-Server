@@ -1,26 +1,45 @@
 package net.daergoth.homewire.live;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import net.daergoth.homewire.BaseUI;
+import net.daergoth.homewire.live.component.CustomChartFactory;
+import net.daergoth.homewire.live.component.CustomChartRepository;
+import net.daergoth.homewire.live.component.RefreshableChart;
+import net.daergoth.homewire.setup.SensorSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.justgage.JustGage;
-import org.vaadin.justgage.JustGageConfiguration;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 
-@SpringView(name = LiveView.VIEW_NAME)
+@SpringView(name = LiveView.VIEW_NAME, ui = BaseUI.class)
+@Title("Live - HomeWire")
 public class LiveView extends VerticalLayout implements View {
 
   public static final String VIEW_NAME = "live";
 
+  private CssLayout dashboard;
+
+  private Map<String, RefreshableChart> gaugeMap;
+
   @Autowired
   private LiveSensorDataService liveSensorDataService;
+
+  @Autowired
+  private CustomChartRepository customChartRepository;
+
+  @Autowired
+  private SensorSetupService sensorSetupService;
+
+  @Autowired
+  private BaseUI ui;
 
   @PostConstruct
   void init() {
@@ -28,14 +47,19 @@ public class LiveView extends VerticalLayout implements View {
     header.setStyleName(ValoTheme.LABEL_H1);
     addComponent(header);
 
-    CssLayout dashboard = new CssLayout();
+    dashboard = new CssLayout();
+    dashboard.setSizeFull();
 
+    gaugeMap = new HashMap<>();
 
+    generateDashboard();
 
-    for (LiveDataDTO liveDataDTO : liveSensorDataService.getCurrentSensorData()) {
-      dashboard.addComponent(getGauge(liveDataDTO));
-    }
+    addComponent(dashboard);
 
+    ui.setPollInterval(2000);
+    ui.addPollListener(event -> {
+      generateDashboard();
+    });
   }
 
   @Override
@@ -43,27 +67,52 @@ public class LiveView extends VerticalLayout implements View {
     // This view is constructed in the init() method()
   }
 
-  private Component getGauge(LiveDataDTO liveDataDTO) {
-    if (liveDataDTO.getType().equals("temperature")) {
-      JustGageConfiguration gageConfiguration = new JustGageConfiguration();
-      gageConfiguration.min = -10f;
-      gageConfiguration.max = 45f;
-      gageConfiguration.title = "Temperature - " + liveDataDTO.getId();
-      gageConfiguration.symbol = "°C";
-      gageConfiguration.value = liveDataDTO.getValue();
+  private void generateDashboard() {
+    for (LiveDataDTO liveData : liveSensorDataService.getCurrentSensorData()) {
 
-      return new JustGage(gageConfiguration);
-    } else if (liveDataDTO.getType().equals("humidity")) {
-      JustGageConfiguration gageConfiguration = new JustGageConfiguration();
-      gageConfiguration.min = 0f;
-      gageConfiguration.max = 100f;
-      gageConfiguration.title = "Humidity - " + liveDataDTO.getId();
-      gageConfiguration.symbol = "%";
-      gageConfiguration.value = liveDataDTO.getValue();
+      if (gaugeMap.containsKey(liveData.getType() + liveData.getId())) {
+        RefreshableChart refreshableChart = gaugeMap.get(liveData.getType() + liveData.getId());
 
-      return new JustGage(gageConfiguration);
-    } else {
-      return new Label("Invalid sensor data!");
+        if (liveData.getValue().getClass().equals(refreshableChart.getRefreshType())) {
+          refreshableChart.refresh(liveData.getValue());
+        }
+
+      } else {
+        RefreshableChart refreshableChart = getGauge(liveData);
+
+        gaugeMap.put(liveData.getType() + liveData.getId(), refreshableChart);
+
+        dashboard.addComponent(refreshableChart);
+      }
     }
+  }
+
+  private RefreshableChart getGauge(LiveDataDTO liveDataDTO) {
+    CustomChartFactory chartFactory = customChartRepository.getChartFactory(liveDataDTO.getType());
+
+    if (chartFactory != null) {
+      RefreshableChart refreshableChart =
+          chartFactory.createChart(sensorSetupService
+              .getSensorNameByIdAndType(liveDataDTO.getId(), liveDataDTO.getType()));
+
+      if (liveDataDTO.getValue().getClass().equals(refreshableChart.getRefreshType())) {
+        refreshableChart.refresh(liveDataDTO.getValue());
+      }
+
+      return refreshableChart;
+    } else {
+      return new RefreshableChart() {
+        @Override
+        public void refresh(Object value) {
+
+        }
+
+        @Override
+        public Class getRefreshType() {
+          return null;
+        }
+      };
+    }
+
   }
 }

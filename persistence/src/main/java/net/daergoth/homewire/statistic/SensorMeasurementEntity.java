@@ -4,6 +4,13 @@ import java.time.ZonedDateTime;
 
 public class SensorMeasurementEntity {
 
+  public enum MeasurementInterval {
+    CURRENT,
+    MINUTE,
+    HOUR,
+    DAY
+  }
+
   private Short id;
 
   private String type;
@@ -11,6 +18,8 @@ public class SensorMeasurementEntity {
   private Float value;
 
   private ZonedDateTime time;
+
+  private MeasurementInterval interval = MeasurementInterval.CURRENT;
 
   public SensorMeasurementEntity() {
   }
@@ -20,6 +29,15 @@ public class SensorMeasurementEntity {
     this.type = type;
     this.value = value;
     this.time = time;
+  }
+
+  public SensorMeasurementEntity(Short id, String type, Float value, ZonedDateTime time,
+                                 MeasurementInterval interval) {
+    this.id = id;
+    this.type = type;
+    this.value = value;
+    this.time = time;
+    this.interval = interval;
   }
 
   public Short getId() {

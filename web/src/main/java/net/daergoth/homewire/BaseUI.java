@@ -11,6 +11,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import net.daergoth.homewire.home.HomeView;
 import net.daergoth.homewire.live.LiveView;
+import net.daergoth.homewire.setup.SetupView;
+import net.daergoth.homewire.statistic.StatisticView;
 import org.vaadin.teemusa.sidemenu.SideMenu;
 import org.vaadin.teemusa.sidemenu.SideMenuUI;
 
@@ -24,7 +26,6 @@ public class BaseUI extends UI implements ViewDisplay {
 
   @Override
   protected void init(VaadinRequest request) {
-
     SideMenu menu = new SideMenu();
     menu.setMenuCaption("HomeWire");
     menu.addMenuItem("Home", () -> {
@@ -32,6 +33,12 @@ public class BaseUI extends UI implements ViewDisplay {
     });
     menu.addMenuItem("Live data", () -> {
       getUI().getNavigator().navigateTo(LiveView.VIEW_NAME);
+    });
+    menu.addMenuItem("Statistics", () -> {
+      getUI().getNavigator().navigateTo(StatisticView.VIEW_NAME);
+    });
+    menu.addMenuItem("Setup", () -> {
+      getUI().getNavigator().navigateTo(SetupView.VIEW_NAME);
     });
     setContent(menu);
 
