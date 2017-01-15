@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.daergoth.homewire.processing.ProcessableSensorDataDTO;
 import net.daergoth.homewire.processing.SensorProcessingService;
 import net.daergoth.homewire.statistic.StatisticDataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,8 @@ import java.time.ZonedDateTime;
 
 @Component
 public class NetworkServer extends Thread {
+
+  private final Logger logger = LoggerFactory.getLogger(NetworkServer.class);
 
   private final StatisticDataRepository statisticDataRepository;
 
@@ -42,25 +46,26 @@ public class NetworkServer extends Thread {
 
   @Override
   public void run() {
-    System.out.println(
-        "Waiting for network connector to connect on port " + serverSocket.getLocalPort() + "...");
+    logger.info("Waiting for network connector to connect on port {}...",
+        serverSocket.getLocalPort());
 
     try (Socket clientSocket = serverSocket.accept()) {
+      logger.info("Just connected to {}", clientSocket.getRemoteSocketAddress());
 
-      System.out.println("Just connected to " + clientSocket.getRemoteSocketAddress());
       DataInputStream in = new DataInputStream(clientSocket.getInputStream());
       BufferedReader d = new BufferedReader(new InputStreamReader(in));
 
       while (isRunning) {
         String dataJson = d.readLine();
 
-        System.out.println("Incoming JSON: " + dataJson);
+        logger.info("Incoming message: {}", dataJson);
 
         handleIncomingData(objectMapper.readValue(dataJson, SensorData.class));
       }
 
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.error("Exception during network server loop: {}", e);
+      this.start();
     }
 
 

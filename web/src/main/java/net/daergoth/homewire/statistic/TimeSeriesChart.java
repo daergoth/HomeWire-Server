@@ -66,8 +66,6 @@ public class TimeSeriesChart extends CustomComponent {
 
     stringBuilder.append(post);
 
-    System.err.println(stringBuilder.toString());
-
     return stringBuilder.toString();
   }
 

@@ -3,6 +3,8 @@ package net.daergoth.homewire.live;
 import com.mongodb.client.MongoDatabase;
 import net.daergoth.homewire.CustomMongoRepository;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,8 @@ import java.util.Map;
 
 @Repository
 public class LiveDataRepository extends CustomMongoRepository {
+
+  private final Logger logger = LoggerFactory.getLogger(LiveDataRepository.class);
 
   private static final String COLLECTION_NAME = "live_data";
 
@@ -26,6 +30,14 @@ public class LiveDataRepository extends CustomMongoRepository {
   }
 
   public void saveLiveData(LiveDataEntity liveDataEntity) {
+    logger.info("Saving live data: {}", liveDataEntity);
+
+    if (liveDataEntity.getValue() == null) {
+      logger.warn("Live sensor data with null value!");
+
+      return;
+    }
+
     Document query = new Document()
         .append("type", liveDataEntity.getType());
 

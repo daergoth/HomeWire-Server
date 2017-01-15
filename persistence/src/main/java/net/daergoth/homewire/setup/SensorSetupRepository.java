@@ -4,6 +4,8 @@ import com.mongodb.Block;
 import com.mongodb.client.MongoDatabase;
 import net.daergoth.homewire.CustomMongoRepository;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Repository
 public class SensorSetupRepository extends CustomMongoRepository {
+
+  private final Logger logger = LoggerFactory.getLogger(SensorSetupRepository.class);
 
   private static final String COLLECTION_NAME = "sensor_setup";
 
@@ -26,6 +30,8 @@ public class SensorSetupRepository extends CustomMongoRepository {
   }
 
   public void assignNameToSensor(Short devId, String type, String name) {
+    logger.info("Assigned name '{}' to ({}, {})", name, devId, type);
+
     Document query = new Document("dev_id", devId)
         .append("type", type);
     Document updated = new Document("name", name);
@@ -34,6 +40,8 @@ public class SensorSetupRepository extends CustomMongoRepository {
   }
 
   public void setTrustedStatusToSensor(Short devId, String type, boolean isTrusted) {
+    logger.info("Trusted status set to '{}' for ({}, {})", isTrusted, devId, type);
+
     Document query = new Document("dev_id", devId)
         .append("type", type);
     Document updated = new Document("isTrusted", isTrusted);
@@ -42,6 +50,8 @@ public class SensorSetupRepository extends CustomMongoRepository {
   }
 
   public void saveSensorEntity(SensorEntity sensorEntity) {
+    logger.info("New sensor added: {}", sensorEntity);
+
     Document sensorDoc = new Document()
         .append("dev_id", sensorEntity.getDevId())
         .append("name", sensorEntity.getName())

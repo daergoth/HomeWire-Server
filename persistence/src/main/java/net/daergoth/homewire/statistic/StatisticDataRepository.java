@@ -4,6 +4,8 @@ import com.mongodb.Block;
 import com.mongodb.client.MongoDatabase;
 import net.daergoth.homewire.CustomMongoRepository;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +24,8 @@ import java.util.List;
 @Repository
 public class StatisticDataRepository extends CustomMongoRepository {
 
+  private final Logger logger = LoggerFactory.getLogger(StatisticDataRepository.class);
+
   private static final String COLLECTION_NAME = "statistic_data";
 
   private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -37,6 +41,14 @@ public class StatisticDataRepository extends CustomMongoRepository {
   }
 
   public void saveSensorData(SensorMeasurementEntity sensorMeasurementEntity) {
+    logger.info("Saving statistic data: {}", sensorMeasurementEntity);
+
+    if (sensorMeasurementEntity.getValue() == null) {
+      logger.warn("Sensor measurement with null value!");
+
+      return;
+    }
+
     LocalDateTime hour =
         sensorMeasurementEntity.getTime().toLocalDateTime().truncatedTo(ChronoUnit.HOURS);
 

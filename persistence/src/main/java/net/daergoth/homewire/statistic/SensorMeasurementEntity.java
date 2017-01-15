@@ -71,4 +71,15 @@ public class SensorMeasurementEntity {
   public void setTime(ZonedDateTime time) {
     this.time = time;
   }
+
+  @Override
+  public String toString() {
+    return "SensorMeasurementEntity{" +
+        "id=" + id +
+        ", type='" + type + '\'' +
+        ", value=" + value +
+        ", time=" + time +
+        ", interval=" + interval +
+        '}';
+  }
 }
