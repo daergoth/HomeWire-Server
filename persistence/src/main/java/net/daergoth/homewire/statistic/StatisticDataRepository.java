@@ -108,18 +108,24 @@ public class StatisticDataRepository extends CustomMongoRepository {
 
     List<Document> aggregateDocument = new ArrayList<>();
 
+    if (!sensorType.isEmpty()) {
+      aggregateDocument.add(
+          new Document()
+              .append("$match", new Document("type", sensorType))
+      );
+    }
+
     switch (measurementInterval) {
       case CURRENT:
       case MINUTE:
         aggregateDocument = Arrays.asList(
-            new Document()
-                .append("$match", new Document("type", sensorType)),
             new Document()
                 .append("$unwind", "$values"),
             new Document()
                 .append("$project", new Document()
                     .append("_id", 0)
                     .append("dev_id", 1)
+                    .append("type", 1)
                     .append("date", new Document()
                         .append("$add", Arrays.asList(
                             "$date_hour",
@@ -144,11 +150,10 @@ public class StatisticDataRepository extends CustomMongoRepository {
       case HOUR:
         aggregateDocument = Arrays.asList(
             new Document()
-                .append("$match", new Document("type", sensorType)),
-            new Document()
                 .append("$project", new Document()
                     .append("_id", 0)
                     .append("dev_id", 1)
+                    .append("type", 1)
                     .append("date", "$date_hour")
                     .append("ave", new Document()
                         .append("$avg", new Document()
@@ -172,13 +177,10 @@ public class StatisticDataRepository extends CustomMongoRepository {
       case DAY:
         aggregateDocument = Arrays.asList(
             new Document()
-                .append("$match", new Document()
-                    .append("type", sensorType)
-                ),
-            new Document()
                 .append("$project", new Document()
                     .append("_id", 0)
                     .append("dev_id", 1)
+                    .append("type", 1)
                     .append("date", new Document()
                         .append("$subtract", Arrays.asList(
                             "$date_hour",
@@ -202,6 +204,7 @@ public class StatisticDataRepository extends CustomMongoRepository {
                     .append("_id", new Document()
                         .append("date", "$date")
                         .append("dev_id", "$dev_id")
+                        .append("type", "$type")
                     )
                     .append("ave", new Document("$avg", "$ave"))
                 ),
@@ -209,6 +212,7 @@ public class StatisticDataRepository extends CustomMongoRepository {
                 .append("$project", new Document()
                     .append("_id", 0)
                     .append("dev_id", "$_id.dev_id")
+                    .append("type", "$_id.type")
                     .append("date", "$_id.date")
                     .append("ave", "$ave")
                 ),
@@ -224,7 +228,7 @@ public class StatisticDataRepository extends CustomMongoRepository {
     collection.aggregate(aggregateDocument)
         .forEach((Block<? super Document>) document -> result.add(new SensorMeasurementEntity(
             document.getInteger("dev_id").shortValue(),
-            sensorType,
+            document.getString("type"),
             document.getDouble("ave").floatValue(),
             ZonedDateTime
                 .parse(dateFormat.format(document.getDate("date")), dateTimeFormatter),

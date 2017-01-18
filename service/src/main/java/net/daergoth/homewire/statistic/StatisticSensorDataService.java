@@ -21,6 +21,30 @@ public class StatisticSensorDataService {
     this.modelMapper = modelMapper;
   }
 
+  public List<StatisticDataDTO> getStatByMinute() {
+    return statisticDataRepository
+        .getSensorDataWithInterval("", SensorMeasurementEntity.MeasurementInterval.MINUTE)
+        .stream()
+        .map(entity -> modelMapper.map(entity, StatisticDataDTO.class))
+        .collect(Collectors.toList());
+  }
+
+  public List<StatisticDataDTO> getStatByHour() {
+    return statisticDataRepository
+        .getSensorDataWithInterval("", SensorMeasurementEntity.MeasurementInterval.HOUR)
+        .stream()
+        .map(entity -> modelMapper.map(entity, StatisticDataDTO.class))
+        .collect(Collectors.toList());
+  }
+
+  public List<StatisticDataDTO> getStatByDay() {
+    return statisticDataRepository
+        .getSensorDataWithInterval("", SensorMeasurementEntity.MeasurementInterval.DAY)
+        .stream()
+        .map(entity -> modelMapper.map(entity, StatisticDataDTO.class))
+        .collect(Collectors.toList());
+  }
+
   public List<StatisticDataDTO> getStatByMinute(String sensorType) {
     return statisticDataRepository
         .getSensorDataWithInterval(sensorType, SensorMeasurementEntity.MeasurementInterval.MINUTE)

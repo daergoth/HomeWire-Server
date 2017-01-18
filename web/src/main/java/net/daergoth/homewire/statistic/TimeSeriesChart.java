@@ -4,22 +4,17 @@ import com.vaadin.ui.CustomComponent;
 import org.vaadin.highcharts.HighChart;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class TimeSeriesChart extends CustomComponent {
 
   private HighChart highChart;
 
-  private Map<String, Object> config;
-
   public TimeSeriesChart(Collection<TimeSeries> seriesList) {
     this.highChart = new HighChart();
-    this.config = new HashMap<>();
 
     highChart.setHcjs(createOptions(seriesList));
-    highChart.setWidth("90%");
+    highChart.setWidth("100%");
 
     setCompositionRoot(highChart);
   }
@@ -29,7 +24,12 @@ public class TimeSeriesChart extends CustomComponent {
         "var chartType = 'StockChart'; var options = {"
             + "credits: { enabled: false },"
 
-            + "legend: { enabled: true, align: 'right', verticalAlign: 'middle', layout: 'vertical'},"
+            + "yAxis: ["
+            + "{ id: 'temperature', labels: { format: '{value:.1f}°C' }, title: { text: 'Temperature'}},"
+            + "{ id: 'humidity', opposite: false, labels: { format: '{value:.1f}%' }, title: { text: 'Humidity'}}"
+            + "],"
+
+            + "legend: { enabled: true, align: 'center', verticalAlign: 'bottom', layout: 'horizontal'},"
 
             + "rangeSelector: { selected: 0, buttons: ["
             + "{type: 'minute', count: 60, text: '1h'},"
@@ -47,26 +47,20 @@ public class TimeSeriesChart extends CustomComponent {
     stringBuilder.append(pre);
 
     for (TimeSeries series : seriesList) {
-      stringBuilder
-          .append("{ type: 'line', tooltip: {valueDecimals: 1}, showInNavigator: true, name: '")
-          .append(series.getName())
-          .append("', data: [");
-
-      for (TimeSeries.TimeSeriesData data : series.getDataList()) {
-        stringBuilder
-            .append("[")
-            .append(data.getDate().getTime())
-            .append(", ")
-            .append(data.getValue())
-            .append("],");
-      }
-
-      stringBuilder.append("]},");
+      stringBuilder.append(series.toString());
     }
 
     stringBuilder.append(post);
 
     return stringBuilder.toString();
+  }
+
+  public void setSeriesVisibility(String id, boolean isVisible) {
+    highChart
+        .manipulateChart("var series = chart.get('" + id + "'); "
+            + "series.setVisible(" + String.valueOf(isVisible) + ");"
+            + "series.update({showInLegend: " + String.valueOf(isVisible) + ", showInNavigator: "
+            + String.valueOf(isVisible) + "});");
   }
 
 
