@@ -64,4 +64,26 @@ public class StatisticDataDTO {
         ", time=" + time +
         '}';
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    StatisticDataDTO that = (StatisticDataDTO) o;
+
+    if (!id.equals(that.id)) return false;
+    if (!type.equals(that.type)) return false;
+    if (!value.equals(that.value)) return false;
+    return time.equals(that.time);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id.hashCode();
+    result = 31 * result + type.hashCode();
+    result = 31 * result + value.hashCode();
+    result = 31 * result + time.hashCode();
+    return result;
+  }
 }

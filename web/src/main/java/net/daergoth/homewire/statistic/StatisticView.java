@@ -4,24 +4,13 @@ import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import net.daergoth.homewire.setup.SensorDTO;
 import net.daergoth.homewire.setup.SensorSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import javax.annotation.PostConstruct;
+import java.util.*;
 
 @SpringView(name = StatisticView.VIEW_NAME)
 @Title("Statistics - HomeWire")
@@ -66,28 +55,21 @@ public class StatisticView extends VerticalLayout implements View {
     VerticalLayout listLayout = new VerticalLayout();
     listLayout.setWidth(25, Unit.PERCENTAGE);
 
-    HashMap<String, List<SensorDTO>> sensorsGroupByType = new HashMap<>();
-
-    sensorSetupService.getAllSensorDtos().forEach(dto -> {
-      List<SensorDTO> dtoList =
-          sensorsGroupByType.computeIfAbsent(dto.getType(), s -> new LinkedList<>());
-
-      dtoList.add(dto);
-    });
-
-    sensorsGroupByType.forEach((s, sensorDTOS) -> {
+    sensorSetupService.getSensorDtosGroupedByType().forEach((groupName, sensorDTOS) -> {
       VerticalLayout sensorList = new VerticalLayout();
+
       sensorDTOS.forEach(sensorDTO -> {
         CheckBox c = new CheckBox(sensorDTO.getName());
+
         c.addValueChangeListener(event -> {
-          updateCharts(sensorDTO.getType() + sensorDTO.getDevId(),
+          updateChart(sensorDTO.getType() + sensorDTO.getDevId(),
               (Boolean) event.getProperty().getValue());
         });
 
         sensorList.addComponent(c);
       });
 
-      Panel typePanel = new Panel(s.substring(0, 1).toUpperCase() + s.substring(1));
+      Panel typePanel = new Panel(groupName.substring(0, 1).toUpperCase() + groupName.substring(1));
       typePanel.setContent(sensorList);
       listLayout.addComponent(typePanel);
     });
@@ -100,19 +82,19 @@ public class StatisticView extends VerticalLayout implements View {
     statAccordion.setWidth(75, Unit.PERCENTAGE);
 
     Collection<TimeSeries> minuteGroupedData =
-        groupDataById(statisticSensorDataService.getStatByMinute()).values();
+        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.MINUTE)).values();
     TimeSeriesChart minuteChart = new TimeSeriesChart(minuteGroupedData);
     charts.add(minuteChart);
     statAccordion.addTab(minuteChart, "By minute");
 
     Collection<TimeSeries> hourGroupedData =
-        groupDataById(statisticSensorDataService.getStatByHour()).values();
+        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.HOUR)).values();
     TimeSeriesChart hourChart = new TimeSeriesChart(hourGroupedData);
     charts.add(hourChart);
     statAccordion.addTab(hourChart, "By hour");
 
     Collection<TimeSeries> dayGroupedData =
-        groupDataById(statisticSensorDataService.getStatByDay()).values();
+        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.HOUR)).values();
     TimeSeriesChart dayChart = new TimeSeriesChart(dayGroupedData);
     charts.add(dayChart);
     statAccordion.addTab(dayChart, "By day");
@@ -139,7 +121,7 @@ public class StatisticView extends VerticalLayout implements View {
     return dataMap;
   }
 
-  private void updateCharts(String id, boolean isVisible) {
+  private void updateChart(String id, boolean isVisible) {
     charts.forEach(chart -> chart.setSeriesVisibility(id, isVisible));
   }
 

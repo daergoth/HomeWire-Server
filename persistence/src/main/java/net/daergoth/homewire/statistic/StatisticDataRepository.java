@@ -15,11 +15,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class StatisticDataRepository extends CustomMongoRepository {
@@ -101,6 +97,11 @@ public class StatisticDataRepository extends CustomMongoRepository {
   }
 
   public List<SensorMeasurementEntity> getSensorDataWithInterval(
+      SensorMeasurementEntity.MeasurementInterval measurementInterval) {
+    return getSensorDataWithIntervalWithType("", measurementInterval);
+  }
+
+  public List<SensorMeasurementEntity> getSensorDataWithIntervalWithType(
       String sensorType,
       SensorMeasurementEntity.MeasurementInterval measurementInterval) {
 

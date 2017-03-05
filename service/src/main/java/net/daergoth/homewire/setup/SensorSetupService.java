@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,13 @@ public class SensorSetupService {
         .stream()
         .map(sensorEntity -> modelMapper.map(sensorEntity, SensorDTO.class))
         .collect(Collectors.toList());
+  }
+
+  public Map<String, List<SensorDTO>> getSensorDtosGroupedByType() {
+    return sensorSetupRepository.getAllSensorEntities()
+        .stream()
+        .map(sensorEntity -> modelMapper.map(sensorEntity, SensorDTO.class))
+        .collect(Collectors.groupingBy(SensorDTO::getType, Collectors.toList()));
   }
 
   public SensorDTO getSensorDtoByIdAndType(Short devId, String type) {
