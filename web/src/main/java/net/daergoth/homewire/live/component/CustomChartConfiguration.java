@@ -14,6 +14,8 @@ public class CustomChartConfiguration {
         .registerChartFactory(TemperatureChartFactory.CHART_TYPE, new TemperatureChartFactory());
     customChartRepository
         .registerChartFactory(HumidityChartFactory.CHART_TYPE, new HumidityChartFactory());
+    customChartRepository.
+        registerChartFactory(SoilMoistureChartFactory.CHART_TYPE, new SoilMoistureChartFactory());
 
     return customChartRepository;
   }
