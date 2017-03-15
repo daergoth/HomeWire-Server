@@ -17,7 +17,7 @@ import net.daergoth.homewire.statistic.StatisticView;
 import org.vaadin.teemusa.sidemenu.SideMenu;
 import org.vaadin.teemusa.sidemenu.SideMenuUI;
 
-@Theme("valo")
+@Theme("homewire")
 @SpringUI
 @SideMenuUI
 @SpringViewDisplay

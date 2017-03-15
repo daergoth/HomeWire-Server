@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live.component.justgage;
+package net.daergoth.homewire.live.component;
 
 import org.vaadin.justgage.JustGage;
 import org.vaadin.justgage.JustGageConfiguration;

@@ -1,14 +1,16 @@
-package net.daergoth.homewire.live.component;
+package net.daergoth.homewire.live.component.humidity;
 
-import net.daergoth.homewire.live.component.justgage.PatchedJustGage;
+import net.daergoth.homewire.live.component.CustomWidgetFactory;
+import net.daergoth.homewire.live.component.RefreshableWidget;
+import net.daergoth.homewire.live.component.PatchedJustGage;
 import org.vaadin.justgage.JustGageConfiguration;
 
-public class HumidityChartFactory implements CustomChartFactory {
+public class HumidityWidgetFactory implements CustomWidgetFactory {
 
   public static final String CHART_TYPE = "humidity";
 
   @Override
-  public RefreshableChart createChart(String label) {
+  public RefreshableWidget createChart(String label) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
     gageConfiguration.title = label;
     return new HumidityGauge(new PatchedJustGage(gageConfiguration));
@@ -26,7 +28,7 @@ public class HumidityChartFactory implements CustomChartFactory {
     return gageConfiguration;
   }
 
-  public static class HumidityGauge extends RefreshableChart<Float> {
+  public static class HumidityGauge extends RefreshableWidget<Float> {
     private PatchedJustGage patchedJustGage;
 
     public HumidityGauge(PatchedJustGage patchedJustGage) {

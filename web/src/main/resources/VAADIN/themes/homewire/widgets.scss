@@ -1,0 +1,46 @@
+@mixin widgets {
+
+  $font: Arial, sans-serif;
+
+  .live-widget {
+    max-width: 20%;
+    width: 20%;
+    min-width: 300px;
+
+    max-height: 10%;
+    height: 10%;
+    min-height: 156px;
+
+    text-align: center;
+  }
+
+  .live-widget-root {
+    text-align: center;
+  }
+
+  .live-widget-title {
+    text-anchor: middle;
+    font-family: $font;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 1.566;
+    color: #999999;
+    margin: 7px 0;
+  }
+
+  .live-widget-data {
+    text-anchor: middle;
+    font-family: $font;
+    font-size: 45px;
+    line-height: 2;
+    color: black;
+  }
+
+  .live-widget-type {
+    text-anchor: middle;
+    font-family: $font;
+    font-size: 10px;
+    color: #999999;
+  }
+
+}

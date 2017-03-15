@@ -2,7 +2,11 @@ package net.daergoth.homewire.live.component;
 
 import com.vaadin.ui.CustomComponent;
 
-public abstract class RefreshableChart<T> extends CustomComponent {
+public abstract class RefreshableWidget<T> extends CustomComponent {
+
+  public RefreshableWidget() {
+    setPrimaryStyleName("live-widget");
+  }
 
   public abstract void refresh(T value);
 
