@@ -59,6 +59,12 @@ public class TimeSeries {
       case "humidity":
         unit = "%";
         break;
+      case "soilmoisture":
+        unit = "%";
+        break;
+      case "motion":
+        unit = "";
+        break;
     }
 
     stringBuilder

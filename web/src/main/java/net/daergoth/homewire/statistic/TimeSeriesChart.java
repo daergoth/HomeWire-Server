@@ -26,7 +26,9 @@ public class TimeSeriesChart extends CustomComponent {
 
             + "yAxis: ["
             + "{ id: 'temperature', labels: { format: '{value:.1f}°C' }, title: { text: 'Temperature'}},"
-            + "{ id: 'humidity', opposite: false, labels: { format: '{value:.1f}%' }, title: { text: 'Humidity'}}"
+            + "{ id: 'humidity', opposite: false, labels: { format: '{value:.1f}%' }, title: { text: 'Humidity'}},"
+            + "{ id: 'soilmoisture', labels: { format: '{value:.1f}%' }, title: { text: 'Soil moisture'}},"
+            + "{ id: 'motion', opposite: false, title: { text: 'Motion'}}"
             + "],"
 
             + "legend: { enabled: true, align: 'center', verticalAlign: 'bottom', layout: 'horizontal'},"
