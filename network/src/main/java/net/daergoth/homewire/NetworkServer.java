@@ -3,7 +3,6 @@ package net.daergoth.homewire;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.daergoth.homewire.processing.ProcessableSensorDataDTO;
 import net.daergoth.homewire.processing.SensorProcessingService;
-import net.daergoth.homewire.statistic.StatisticDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +10,19 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class NetworkServer extends Thread {
 
   private final Logger logger = LoggerFactory.getLogger(NetworkServer.class);
-
-  private final StatisticDataRepository statisticDataRepository;
 
   private final ObjectMapper objectMapper;
 
@@ -30,19 +30,24 @@ public class NetworkServer extends Thread {
 
   private ServerSocket serverSocket;
 
+  private List<ActorCommand> commandList;
+
   private boolean isRunning = true;
 
   @Autowired
-  public NetworkServer(StatisticDataRepository statisticDataRepository,
-                       ObjectMapper objectMapper,
+  public NetworkServer(ObjectMapper objectMapper,
                        SensorProcessingService processingService) throws IOException {
-    this.statisticDataRepository = statisticDataRepository;
     this.objectMapper = objectMapper;
     this.processingService = processingService;
+
+    commandList = new CopyOnWriteArrayList<>();
 
     serverSocket = new ServerSocket(45678);
   }
 
+  public void sendActorCommand(ActorCommand command) {
+    commandList.add(command);
+  }
 
   @Override
   public void run() {
@@ -53,21 +58,37 @@ public class NetworkServer extends Thread {
       logger.info("Just connected to {}", clientSocket.getRemoteSocketAddress());
 
       DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+      DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+
       BufferedReader d = new BufferedReader(new InputStreamReader(in));
 
       while (isRunning) {
-        String dataJson = d.readLine();
+        for (ActorCommand command : commandList) {
+          logger.info("Sending command: {}", command.toString());
 
-        logger.info("Incoming message: {}", dataJson);
+          String json = objectMapper.writeValueAsString(command);
 
-        handleIncomingData(objectMapper.readValue(dataJson, SensorData.class));
+          logger.info("json: {}", json);
+
+          out.writeBytes(json);
+          commandList.remove(command);
+        }
+
+        if (in.available() > 0) {
+          String dataJson = d.readLine();
+
+          logger.info("Incoming message: {}", dataJson);
+
+          handleIncomingData(objectMapper.readValue(dataJson, SensorData.class));
+        }
+
+        sleep(10);
       }
 
     } catch (Exception e) {
       logger.error("Exception during network server loop: {}", e);
       this.start();
     }
-
 
   }
 
