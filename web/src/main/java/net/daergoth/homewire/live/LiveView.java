@@ -4,8 +4,11 @@ import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import net.daergoth.homewire.BaseUI;
@@ -15,6 +18,7 @@ import net.daergoth.homewire.live.component.RefreshableWidget;
 import net.daergoth.homewire.setup.SensorSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -28,6 +32,8 @@ public class LiveView extends VerticalLayout implements View {
   private CssLayout dashboard;
 
   private Map<String, RefreshableWidget> widgetMap;
+
+  private Map<String, Panel> panelMap;
 
   @Autowired
   private LiveSensorDataService liveSensorDataService;
@@ -51,6 +57,8 @@ public class LiveView extends VerticalLayout implements View {
     dashboard.setSizeFull();
 
     widgetMap = new HashMap<>();
+
+    panelMap = new HashMap<>();
 
     generateDashboard();
 
@@ -82,13 +90,34 @@ public class LiveView extends VerticalLayout implements View {
 
         widgetMap.put(liveData.getType() + liveData.getId(), refreshableWidget);
 
-        dashboard.addComponent(refreshableWidget);
+        if (panelMap.containsKey(liveData.getType())) {
+          HorizontalLayout innerLayout =
+              (HorizontalLayout) panelMap.get(liveData.getType()).getContent();
+
+          innerLayout.addComponent(refreshableWidget);
+
+        } else {
+          HorizontalLayout innerLayout = new HorizontalLayout(refreshableWidget);
+
+          Panel typePanel = new Panel(
+              liveData.getType().substring(0, 1).toUpperCase() + liveData.getType().substring(1),
+              innerLayout
+          );
+
+          panelMap.put(liveData.getType(), typePanel);
+        }
+
       }
     }
+
+    panelMap.values().stream().sorted(Comparator.comparing(Panel::getCaption))
+        .forEach(panel -> dashboard.addComponent(panel));
   }
 
   private RefreshableWidget getWidget(LiveDataDTO liveDataDTO) {
-    CustomWidgetFactory chartFactory = customWidgetRepository.getWidgetFactory(liveDataDTO.getType());
+    CustomWidgetFactory
+        chartFactory =
+        customWidgetRepository.getWidgetFactory(liveDataDTO.getType());
 
     if (chartFactory != null) {
       RefreshableWidget refreshableWidget =
