@@ -15,7 +15,11 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public class StatisticDataRepository extends CustomMongoRepository {
@@ -36,32 +40,32 @@ public class StatisticDataRepository extends CustomMongoRepository {
     return COLLECTION_NAME;
   }
 
-  public void saveSensorData(SensorMeasurementEntity sensorMeasurementEntity) {
-    logger.info("Saving statistic data: {}", sensorMeasurementEntity);
+  public void saveDeviceState(DeviceStateEntity deviceStateEntity) {
+    logger.info("Saving statistic data: {}", deviceStateEntity);
 
-    if (sensorMeasurementEntity.getValue() == null) {
-      logger.warn("Sensor measurement with null value!");
+    if (deviceStateEntity.getValue() == null) {
+      logger.warn("Device data with null value!");
 
       return;
     }
 
     LocalDateTime hour =
-        sensorMeasurementEntity.getTime().toLocalDateTime().truncatedTo(ChronoUnit.HOURS);
+        deviceStateEntity.getTime().toLocalDateTime().truncatedTo(ChronoUnit.HOURS);
 
     Document query = new Document()
-        .append("dev_id", sensorMeasurementEntity.getId())
+        .append("dev_id", deviceStateEntity.getId())
         .append("date_hour", Date.from(hour.toInstant(ZoneOffset.UTC)))
-        .append("type", sensorMeasurementEntity.getType());
+        .append("type", deviceStateEntity.getType());
 
     if (collection.count(query) > 0) {
       Document arrayQuery = new Document(query)
-          .append("values.minute", sensorMeasurementEntity.getTime().getMinute());
+          .append("values.minute", deviceStateEntity.getTime().getMinute());
 
       if (collection.count(arrayQuery) > 0) {
         Document updated = new Document()
             .append("$inc", new Document()
                 .append("values.$.num", 1)
-                .append("values.$.sum", sensorMeasurementEntity.getValue())
+                .append("values.$.sum", deviceStateEntity.getValue())
             );
 
         collection.updateOne(arrayQuery, updated);
@@ -70,9 +74,9 @@ public class StatisticDataRepository extends CustomMongoRepository {
         Document arrayElement = new Document()
             .append("$push", new Document()
                 .append("values", new Document()
-                    .append("minute", sensorMeasurementEntity.getTime().getMinute())
+                    .append("minute", deviceStateEntity.getTime().getMinute())
                     .append("num", 1)
-                    .append("sum", sensorMeasurementEntity.getValue())
+                    .append("sum", deviceStateEntity.getValue())
                 )
             );
 
@@ -81,14 +85,14 @@ public class StatisticDataRepository extends CustomMongoRepository {
 
     } else {
       Document newDocument = new Document()
-          .append("dev_id", sensorMeasurementEntity.getId())
+          .append("dev_id", deviceStateEntity.getId())
           .append("date_hour", Date.from(hour.toInstant(ZoneOffset.UTC)))
-          .append("type", sensorMeasurementEntity.getType())
+          .append("type", deviceStateEntity.getType())
           .append("values",
               Collections.singletonList(new Document()
-                  .append("minute", sensorMeasurementEntity.getTime().getMinute())
+                  .append("minute", deviceStateEntity.getTime().getMinute())
                   .append("num", 1)
-                  .append("sum", sensorMeasurementEntity.getValue())
+                  .append("sum", deviceStateEntity.getValue())
               )
           );
 
@@ -96,27 +100,27 @@ public class StatisticDataRepository extends CustomMongoRepository {
     }
   }
 
-  public List<SensorMeasurementEntity> getSensorDataWithInterval(
-      SensorMeasurementEntity.MeasurementInterval measurementInterval) {
-    return getSensorDataWithIntervalWithType("", measurementInterval);
+  public List<DeviceStateEntity> getDeviceStateWithInterval(
+      DeviceStateEntity.StateInterval stateInterval) {
+    return getDeviceStateWithIntervalWithType("", stateInterval);
   }
 
-  public List<SensorMeasurementEntity> getSensorDataWithIntervalWithType(
-      String sensorType,
-      SensorMeasurementEntity.MeasurementInterval measurementInterval) {
+  public List<DeviceStateEntity> getDeviceStateWithIntervalWithType(
+      String deviceType,
+      DeviceStateEntity.StateInterval stateInterval) {
 
-    List<SensorMeasurementEntity> result = new ArrayList<>();
+    List<DeviceStateEntity> result = new ArrayList<>();
 
     List<Document> aggregateDocument = new ArrayList<>();
 
-    if (!sensorType.isEmpty()) {
+    if (!deviceType.isEmpty()) {
       aggregateDocument.add(
           new Document()
-              .append("$match", new Document("type", sensorType))
+              .append("$match", new Document("type", deviceType))
       );
     }
 
-    switch (measurementInterval) {
+    switch (stateInterval) {
       case CURRENT:
       case MINUTE:
         aggregateDocument = Arrays.asList(
@@ -227,13 +231,13 @@ public class StatisticDataRepository extends CustomMongoRepository {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     collection.aggregate(aggregateDocument)
-        .forEach((Block<? super Document>) document -> result.add(new SensorMeasurementEntity(
+        .forEach((Block<? super Document>) document -> result.add(new DeviceStateEntity(
             document.getInteger("dev_id").shortValue(),
             document.getString("type"),
             document.getDouble("ave").floatValue(),
             ZonedDateTime
                 .parse(dateFormat.format(document.getDate("date")), dateTimeFormatter),
-            measurementInterval)
+            stateInterval)
         ));
 
     return result;

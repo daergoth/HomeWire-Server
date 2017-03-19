@@ -1,9 +1,11 @@
 package net.daergoth.homewire;
 
 
-public class SensorData {
+public class DeviceData {
 
   private Short id;
+
+  private String category;
 
   private String type;
 
@@ -11,6 +13,10 @@ public class SensorData {
 
   public Short getId() {
     return id;
+  }
+
+  public String getCategory() {
+    return category;
   }
 
   public String getType() {
@@ -25,6 +31,10 @@ public class SensorData {
     this.id = id;
   }
 
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
   public void setType(String type) {
     this.type = type;
   }
@@ -35,8 +45,9 @@ public class SensorData {
 
   @Override
   public String toString() {
-    return "SensorData{" +
+    return "DeviceData{" +
         "id=" + id +
+        ", category='" + category + '\'' +
         ", type='" + type + '\'' +
         ", value=" + value +
         '}';

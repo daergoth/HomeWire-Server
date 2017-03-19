@@ -23,7 +23,7 @@ public class SetupView extends VerticalLayout implements View {
   public static final String VIEW_NAME = "setup";
 
   @Autowired
-  private SensorSetupService sensorSetupService;
+  private DeviceSetupService deviceSetupService;
 
   @PostConstruct
   void init() {
@@ -34,11 +34,12 @@ public class SetupView extends VerticalLayout implements View {
 
     Grid grid = new Grid();
 
-    List<SensorDTO> sensorDTOS = sensorSetupService.getAllSensorDtos();
-    grid.setContainerDataSource(new BeanItemContainer<>(SensorDTO.class, sensorDTOS));
+    List<DeviceDTO> deviceDTOS = deviceSetupService.getAllDeviceDtos();
+    grid.setContainerDataSource(new BeanItemContainer<>(DeviceDTO.class, deviceDTOS));
     grid.setWidth("90%");
     grid.setEditorEnabled(true);
     grid.getColumn("devId").setEditable(false);
+    grid.getColumn("category").setEditable(false);
     grid.getColumn("type").setEditable(false);
     grid.getEditorFieldGroup().addCommitHandler(new FieldGroup.CommitHandler() {
       @Override
@@ -52,12 +53,12 @@ public class SetupView extends VerticalLayout implements View {
         String type = (String) commitEvent.getFieldBinder().getItemDataSource()
             .getItemProperty("type").getValue();
 
-        SensorDTO toUpdate = sensorSetupService.getSensorDtoByIdAndType(devId, type);
+        DeviceDTO toUpdate = deviceSetupService.getDeviceDtoByIdAndType(devId, type);
         toUpdate.setName((String) commitEvent.getFieldBinder().getField("name").getValue());
         toUpdate
             .setTrusted((Boolean) commitEvent.getFieldBinder().getField("trusted").getValue());
 
-        sensorSetupService.updateSensorDto(toUpdate);
+        deviceSetupService.updateDeviceDto(toUpdate);
       }
     });
 

@@ -6,7 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import net.daergoth.homewire.setup.SensorSetupService;
+import net.daergoth.homewire.setup.DeviceSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -21,10 +21,10 @@ public class StatisticView extends VerticalLayout implements View {
   private List<TimeSeriesChart> charts;
 
   @Autowired
-  private StatisticSensorDataService statisticSensorDataService;
+  private StatisticDeviceDataService statisticDeviceDataService;
 
   @Autowired
-  private SensorSetupService sensorSetupService;
+  private DeviceSetupService deviceSetupService;
 
   @PostConstruct
   void init() {
@@ -55,7 +55,7 @@ public class StatisticView extends VerticalLayout implements View {
     VerticalLayout listLayout = new VerticalLayout();
     listLayout.setWidth(25, Unit.PERCENTAGE);
 
-    sensorSetupService.getSensorDtosGroupedByType().forEach((groupName, sensorDTOS) -> {
+    deviceSetupService.getSensorDtosGroupedByType().forEach((groupName, sensorDTOS) -> {
       VerticalLayout sensorList = new VerticalLayout();
 
       sensorDTOS.forEach(sensorDTO -> {
@@ -82,19 +82,19 @@ public class StatisticView extends VerticalLayout implements View {
     statAccordion.setWidth(75, Unit.PERCENTAGE);
 
     Collection<TimeSeries> minuteGroupedData =
-        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.MINUTE)).values();
+        groupDataById(statisticDeviceDataService.getStats(DeviceStateEntity.StateInterval.MINUTE)).values();
     TimeSeriesChart minuteChart = new TimeSeriesChart(minuteGroupedData);
     charts.add(minuteChart);
     statAccordion.addTab(minuteChart, "By minute");
 
     Collection<TimeSeries> hourGroupedData =
-        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.HOUR)).values();
+        groupDataById(statisticDeviceDataService.getStats(DeviceStateEntity.StateInterval.HOUR)).values();
     TimeSeriesChart hourChart = new TimeSeriesChart(hourGroupedData);
     charts.add(hourChart);
     statAccordion.addTab(hourChart, "By hour");
 
     Collection<TimeSeries> dayGroupedData =
-        groupDataById(statisticSensorDataService.getStats(SensorMeasurementEntity.MeasurementInterval.HOUR)).values();
+        groupDataById(statisticDeviceDataService.getStats(DeviceStateEntity.StateInterval.HOUR)).values();
     TimeSeriesChart dayChart = new TimeSeriesChart(dayGroupedData);
     charts.add(dayChart);
     statAccordion.addTab(dayChart, "By day");
@@ -108,7 +108,7 @@ public class StatisticView extends VerticalLayout implements View {
       TimeSeries series = dataMap.computeIfAbsent(dto.getType() + dto.getId(),
           id -> new TimeSeries(
               dto.getType() + dto.getId(),
-              sensorSetupService.getSensorNameByIdAndType(dto.getId(), dto.getType()),
+              deviceSetupService.getDeviceNameByIdAndType(dto.getId(), dto.getType()),
               dto.getType(),
               new LinkedList<>()));
 

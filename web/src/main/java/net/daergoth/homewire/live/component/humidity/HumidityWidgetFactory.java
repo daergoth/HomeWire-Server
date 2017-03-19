@@ -10,7 +10,7 @@ public class HumidityWidgetFactory implements CustomWidgetFactory {
   public static final String CHART_TYPE = "humidity";
 
   @Override
-  public RefreshableWidget createChart(String label) {
+  public RefreshableWidget createWidget(String label) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
     gageConfiguration.title = label;
     return new HumidityGauge(new PatchedJustGage(gageConfiguration));

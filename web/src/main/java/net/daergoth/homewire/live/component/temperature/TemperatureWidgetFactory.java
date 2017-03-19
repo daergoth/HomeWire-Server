@@ -10,7 +10,7 @@ public class TemperatureWidgetFactory implements CustomWidgetFactory {
   public static final String CHART_TYPE = "temperature";
 
   @Override
-  public RefreshableWidget createChart(String label) {
+  public RefreshableWidget createWidget(String label) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
     gageConfiguration.title = label;
     return new TemperatureGauge(new PatchedJustGage(gageConfiguration));

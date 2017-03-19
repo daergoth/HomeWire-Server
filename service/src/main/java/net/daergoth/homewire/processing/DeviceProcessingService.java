@@ -2,47 +2,47 @@ package net.daergoth.homewire.processing;
 
 import net.daergoth.homewire.live.LiveDataEntity;
 import net.daergoth.homewire.live.LiveDataRepository;
-import net.daergoth.homewire.setup.SensorEntity;
-import net.daergoth.homewire.setup.SensorSetupRepository;
-import net.daergoth.homewire.statistic.SensorMeasurementEntity;
+import net.daergoth.homewire.setup.DeviceEntity;
+import net.daergoth.homewire.setup.DeviceSetupRepository;
+import net.daergoth.homewire.statistic.DeviceStateEntity;
 import net.daergoth.homewire.statistic.StatisticDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SensorProcessingService {
+public class DeviceProcessingService {
 
   private final StatisticDataRepository statisticDataRepository;
 
   private final LiveDataRepository liveDataRepository;
 
-  private final SensorSetupRepository sensorSetupRepository;
+  private final DeviceSetupRepository deviceSetupRepository;
 
   private final ModelMapper modelMapper;
 
   @Autowired
-  public SensorProcessingService(StatisticDataRepository statisticDataRepository,
+  public DeviceProcessingService(StatisticDataRepository statisticDataRepository,
                                  ModelMapper modelMapper, LiveDataRepository liveDataRepository,
-                                 SensorSetupRepository sensorSetupRepository) {
+                                 DeviceSetupRepository deviceSetupRepository) {
     this.statisticDataRepository = statisticDataRepository;
     this.modelMapper = modelMapper;
     this.liveDataRepository = liveDataRepository;
-    this.sensorSetupRepository = sensorSetupRepository;
+    this.deviceSetupRepository = deviceSetupRepository;
   }
 
-  public void processSensorData(ProcessableSensorDataDTO dataDTO) {
-    statisticDataRepository.saveSensorData(modelMapper.map(dataDTO, SensorMeasurementEntity.class));
+  public void processDeviceData(ProcessableDeviceDataDTO dataDTO) {
+    statisticDataRepository.saveDeviceState(modelMapper.map(dataDTO, DeviceStateEntity.class));
 
     liveDataRepository.saveLiveData(modelMapper.map(dataDTO, LiveDataEntity.class));
 
-    //TODO proper init sensor message
-    if (sensorSetupRepository.getSensorEntityByIdAndType(dataDTO.getId(), dataDTO.getType())
+    if (deviceSetupRepository.getDeviceEntityByIdAndType(dataDTO.getId(), dataDTO.getType())
         == null) {
-      sensorSetupRepository.saveSensorEntity(
-          new SensorEntity(
+      deviceSetupRepository.saveDeviceEntity(
+          new DeviceEntity(
               dataDTO.getId(),
               "Unknown - " + dataDTO.getType() + dataDTO.getId(),
+              dataDTO.getCategory(),
               dataDTO.getType(),
               false
           )

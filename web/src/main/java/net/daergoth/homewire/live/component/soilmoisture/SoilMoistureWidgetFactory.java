@@ -10,7 +10,7 @@ public class SoilMoistureWidgetFactory implements CustomWidgetFactory {
   public static final String CHART_TYPE = "soilmoisture";
 
   @Override
-  public RefreshableWidget createChart(String label) {
+  public RefreshableWidget createWidget(String label) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
     gageConfiguration.title = label;
     return new SoilMoistureGauge(new PatchedJustGage(gageConfiguration));

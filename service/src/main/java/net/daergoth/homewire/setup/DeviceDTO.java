@@ -1,8 +1,10 @@
 package net.daergoth.homewire.setup;
 
-public class SensorDTO {
+public class DeviceDTO {
 
   private Short devId;
+
+  private String category;
 
   private String name;
 
@@ -10,11 +12,12 @@ public class SensorDTO {
 
   private boolean isTrusted;
 
-  public SensorDTO() {
+  public DeviceDTO() {
   }
 
-  public SensorDTO(Short devId, String name, String type, boolean isTrusted) {
+  public DeviceDTO(Short devId, String category, String name, String type, boolean isTrusted) {
     this.devId = devId;
+    this.category = category;
     this.name = name;
     this.type = type;
     this.isTrusted = isTrusted;
@@ -26,6 +29,14 @@ public class SensorDTO {
 
   public void setDevId(Short devId) {
     this.devId = devId;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public String getName() {

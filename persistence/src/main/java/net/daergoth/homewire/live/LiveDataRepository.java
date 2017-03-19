@@ -33,7 +33,7 @@ public class LiveDataRepository extends CustomMongoRepository {
     logger.info("Saving live data: {}", liveDataEntity);
 
     if (liveDataEntity.getValue() == null) {
-      logger.warn("Live sensor data with null value!");
+      logger.warn("Live device data with null value!");
 
       return;
     }

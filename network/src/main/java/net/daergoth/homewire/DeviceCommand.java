@@ -1,12 +1,12 @@
 package net.daergoth.homewire;
 
-public class ActorCommand {
+public class DeviceCommand {
 
   private Short id;
 
   private boolean targetState;
 
-  public ActorCommand(Short id, boolean targetState) {
+  public DeviceCommand(Short id, boolean targetState) {
     this.id = id;
     this.targetState = targetState;
   }
@@ -29,7 +29,7 @@ public class ActorCommand {
 
   @Override
   public String toString() {
-    return "ActorCommand{" +
+    return "DeviceCommand{" +
         "id=" + id +
         ", targetState=" + targetState +
         '}';

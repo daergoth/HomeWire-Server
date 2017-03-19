@@ -2,9 +2,9 @@ package net.daergoth.homewire.statistic;
 
 import java.time.ZonedDateTime;
 
-public class SensorMeasurementEntity {
+public class DeviceStateEntity {
 
-  public enum MeasurementInterval {
+  public enum StateInterval {
     CURRENT,
     MINUTE,
     HOUR,
@@ -19,20 +19,20 @@ public class SensorMeasurementEntity {
 
   private ZonedDateTime time;
 
-  private MeasurementInterval interval = MeasurementInterval.CURRENT;
+  private StateInterval interval = StateInterval.CURRENT;
 
-  public SensorMeasurementEntity() {
+  public DeviceStateEntity() {
   }
 
-  public SensorMeasurementEntity(Short id, String type, Float value, ZonedDateTime time) {
+  public DeviceStateEntity(Short id, String type, Float value, ZonedDateTime time) {
     this.id = id;
     this.type = type;
     this.value = value;
     this.time = time;
   }
 
-  public SensorMeasurementEntity(Short id, String type, Float value, ZonedDateTime time,
-                                 MeasurementInterval interval) {
+  public DeviceStateEntity(Short id, String type, Float value, ZonedDateTime time,
+                           StateInterval interval) {
     this.id = id;
     this.type = type;
     this.value = value;
@@ -74,7 +74,7 @@ public class SensorMeasurementEntity {
 
   @Override
   public String toString() {
-    return "SensorMeasurementEntity{" +
+    return "DeviceStateEntity{" +
         "id=" + id +
         ", type='" + type + '\'' +
         ", value=" + value +

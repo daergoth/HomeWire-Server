@@ -4,7 +4,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -15,7 +14,7 @@ import net.daergoth.homewire.BaseUI;
 import net.daergoth.homewire.live.component.CustomWidgetFactory;
 import net.daergoth.homewire.live.component.CustomWidgetRepository;
 import net.daergoth.homewire.live.component.RefreshableWidget;
-import net.daergoth.homewire.setup.SensorSetupService;
+import net.daergoth.homewire.setup.DeviceSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
@@ -36,13 +35,13 @@ public class LiveView extends VerticalLayout implements View {
   private Map<String, Panel> panelMap;
 
   @Autowired
-  private LiveSensorDataService liveSensorDataService;
+  private LiveDataService liveDataService;
 
   @Autowired
   private CustomWidgetRepository customWidgetRepository;
 
   @Autowired
-  private SensorSetupService sensorSetupService;
+  private DeviceSetupService deviceSetupService;
 
   @Autowired
   private BaseUI ui;
@@ -76,7 +75,7 @@ public class LiveView extends VerticalLayout implements View {
   }
 
   private void generateDashboard() {
-    for (LiveDataDTO liveData : liveSensorDataService.getCurrentSensorData()) {
+    for (LiveDataDTO liveData : liveDataService.getCurrentDeviceData()) {
 
       if (widgetMap.containsKey(liveData.getType() + liveData.getId())) {
         RefreshableWidget refreshableWidget = widgetMap.get(liveData.getType() + liveData.getId());
@@ -115,14 +114,13 @@ public class LiveView extends VerticalLayout implements View {
   }
 
   private RefreshableWidget getWidget(LiveDataDTO liveDataDTO) {
-    CustomWidgetFactory
-        chartFactory =
+    CustomWidgetFactory widgetFactory =
         customWidgetRepository.getWidgetFactory(liveDataDTO.getType());
 
-    if (chartFactory != null) {
+    if (widgetFactory != null) {
       RefreshableWidget refreshableWidget =
-          chartFactory.createChart(sensorSetupService
-              .getSensorNameByIdAndType(liveDataDTO.getId(), liveDataDTO.getType()));
+          widgetFactory.createWidget(deviceSetupService
+              .getDeviceNameByIdAndType(liveDataDTO.getId(), liveDataDTO.getType()));
 
       if (liveDataDTO.getValue().getClass().equals(refreshableWidget.getRefreshType())) {
         refreshableWidget.refresh(liveDataDTO.getValue());
@@ -132,9 +130,7 @@ public class LiveView extends VerticalLayout implements View {
     } else {
       return new RefreshableWidget() {
         @Override
-        public void refresh(Object value) {
-
-        }
+        public void refresh(Object value) {}
 
         @Override
         public Class getRefreshType() {

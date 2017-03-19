@@ -8,7 +8,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import net.daergoth.homewire.ActorCommand;
+import net.daergoth.homewire.DeviceCommand;
 import net.daergoth.homewire.NetworkServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class HomeView extends VerticalLayout implements View {
     Button testButton = new Button("Toggle relay");
     testButton.addClickListener(event -> {
       logger.warn("Toggle relay!! state: {}", state);
-      networkServer.sendActorCommand(new ActorCommand((short) 5, state));
+      networkServer.sendDeviceCommand(new DeviceCommand((short) 5, state));
       state = !state;
     });
 

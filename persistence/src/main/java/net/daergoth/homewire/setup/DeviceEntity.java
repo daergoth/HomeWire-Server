@@ -1,21 +1,24 @@
 package net.daergoth.homewire.setup;
 
-public class SensorEntity {
+public class DeviceEntity {
 
   private Short devId;
 
   private String name;
 
+  private String category;
+
   private String type;
 
   private boolean isTrusted;
 
-  public SensorEntity() {
+  public DeviceEntity() {
   }
 
-  public SensorEntity(Short devId, String name, String type, boolean isTrusted) {
+  public DeviceEntity(Short devId, String name, String category, String type, boolean isTrusted) {
     this.devId = devId;
     this.name = name;
+    this.category = category;
     this.type = type;
     this.isTrusted = isTrusted;
   }
@@ -36,6 +39,14 @@ public class SensorEntity {
     this.name = name;
   }
 
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
   public String getType() {
     return type;
   }
@@ -54,9 +65,10 @@ public class SensorEntity {
 
   @Override
   public String toString() {
-    return "SensorEntity{" +
+    return "DeviceEntity{" +
         "devId=" + devId +
         ", name='" + name + '\'' +
+        ", category='" + category + '\'' +
         ", type='" + type + '\'' +
         ", isTrusted=" + isTrusted +
         '}';

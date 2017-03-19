@@ -10,7 +10,7 @@ public class MotionWidgetFactory implements CustomWidgetFactory {
   public static final String CHART_TYPE = "motion";
 
   @Override
-  public RefreshableWidget createChart(String label) {
+  public RefreshableWidget createWidget(String label) {
     return new MotionWidget(label);
   }
 

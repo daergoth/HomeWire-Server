@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class LiveSensorDataService {
+public class LiveDataService {
 
   private final LiveDataRepository liveDataRepository;
 
   private final ModelMapper modelMapper;
 
   @Autowired
-  public LiveSensorDataService(LiveDataRepository liveDataRepository, ModelMapper modelMapper) {
+  public LiveDataService(LiveDataRepository liveDataRepository, ModelMapper modelMapper) {
     this.liveDataRepository = liveDataRepository;
     this.modelMapper = modelMapper;
   }
 
-  public List<LiveDataDTO> getCurrentSensorData() {
+  public List<LiveDataDTO> getCurrentDeviceData() {
     return liveDataRepository.getLiveData().stream()
         .map(liveDataEntity -> modelMapper.map(liveDataEntity, LiveDataDTO.class))
         .collect(Collectors.toList());

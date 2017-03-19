@@ -1,8 +1,8 @@
 package net.daergoth.homewire;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.daergoth.homewire.processing.ProcessableSensorDataDTO;
-import net.daergoth.homewire.processing.SensorProcessingService;
+import net.daergoth.homewire.processing.DeviceProcessingService;
+import net.daergoth.homewire.processing.ProcessableDeviceDataDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +26,17 @@ public class NetworkServer extends Thread {
 
   private final ObjectMapper objectMapper;
 
-  private final SensorProcessingService processingService;
+  private final DeviceProcessingService processingService;
 
   private ServerSocket serverSocket;
 
-  private List<ActorCommand> commandList;
+  private List<DeviceCommand> commandList;
 
   private boolean isRunning = true;
 
   @Autowired
   public NetworkServer(ObjectMapper objectMapper,
-                       SensorProcessingService processingService) throws IOException {
+                       DeviceProcessingService processingService) throws IOException {
     this.objectMapper = objectMapper;
     this.processingService = processingService;
 
@@ -45,7 +45,7 @@ public class NetworkServer extends Thread {
     serverSocket = new ServerSocket(45678);
   }
 
-  public void sendActorCommand(ActorCommand command) {
+  public void sendDeviceCommand(DeviceCommand command) {
     commandList.add(command);
   }
 
@@ -63,7 +63,7 @@ public class NetworkServer extends Thread {
       BufferedReader d = new BufferedReader(new InputStreamReader(in));
 
       while (isRunning) {
-        for (ActorCommand command : commandList) {
+        for (DeviceCommand command : commandList) {
           logger.info("Sending command: {}", command.toString());
 
           String json = objectMapper.writeValueAsString(command);
@@ -79,7 +79,7 @@ public class NetworkServer extends Thread {
 
           logger.info("Incoming message: {}", dataJson);
 
-          handleIncomingData(objectMapper.readValue(dataJson, SensorData.class));
+          handleIncomingData(objectMapper.readValue(dataJson, DeviceData.class));
         }
 
         sleep(10);
@@ -92,9 +92,10 @@ public class NetworkServer extends Thread {
 
   }
 
-  private void handleIncomingData(SensorData data) {
-    processingService.processSensorData(
-        new ProcessableSensorDataDTO(data.getId(),
+  private void handleIncomingData(DeviceData data) {
+    processingService.processDeviceData(
+        new ProcessableDeviceDataDTO(data.getId(),
+            data.getCategory(),
             data.getType(),
             data.getValue(),
             ZonedDateTime.now()));
