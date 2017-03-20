@@ -17,7 +17,7 @@ public class DeviceSetupRepository extends CustomMongoRepository {
 
   private final Logger logger = LoggerFactory.getLogger(DeviceSetupRepository.class);
 
-  private static final String COLLECTION_NAME = "sensor_setup";
+  private static final String COLLECTION_NAME = "device_setup";
 
   @Autowired
   public DeviceSetupRepository(MongoDatabase db) {

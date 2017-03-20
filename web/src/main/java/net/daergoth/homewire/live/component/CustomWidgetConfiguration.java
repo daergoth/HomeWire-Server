@@ -2,6 +2,7 @@ package net.daergoth.homewire.live.component;
 
 import net.daergoth.homewire.live.component.humidity.HumidityWidgetFactory;
 import net.daergoth.homewire.live.component.motion.MotionWidgetFactory;
+import net.daergoth.homewire.live.component.relay.RelayWidgetFactory;
 import net.daergoth.homewire.live.component.soilmoisture.SoilMoistureWidgetFactory;
 import net.daergoth.homewire.live.component.temperature.TemperatureWidgetFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +20,12 @@ public class CustomWidgetConfiguration {
     customWidgetRepository
         .registerWidgetFactory(HumidityWidgetFactory.CHART_TYPE, new HumidityWidgetFactory());
     customWidgetRepository.
-        registerWidgetFactory(SoilMoistureWidgetFactory.CHART_TYPE, new SoilMoistureWidgetFactory());
+        registerWidgetFactory(SoilMoistureWidgetFactory.CHART_TYPE,
+            new SoilMoistureWidgetFactory());
     customWidgetRepository.
         registerWidgetFactory(MotionWidgetFactory.CHART_TYPE, new MotionWidgetFactory());
+    customWidgetRepository.
+        registerWidgetFactory(RelayWidgetFactory.CHART_TYPE, new RelayWidgetFactory());
 
     return customWidgetRepository;
   }
