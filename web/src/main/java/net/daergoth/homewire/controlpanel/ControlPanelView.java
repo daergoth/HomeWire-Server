@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live;
+package net.daergoth.homewire.controlpanel;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
@@ -11,9 +11,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import net.daergoth.homewire.BaseUI;
-import net.daergoth.homewire.live.component.CustomWidgetFactory;
-import net.daergoth.homewire.live.component.CustomWidgetRepository;
-import net.daergoth.homewire.live.component.RefreshableWidget;
+import net.daergoth.homewire.controlpanel.component.CustomWidgetFactory;
+import net.daergoth.homewire.controlpanel.component.CustomWidgetRepository;
+import net.daergoth.homewire.controlpanel.component.RefreshableWidget;
 import net.daergoth.homewire.setup.DeviceSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
-@SpringView(name = LiveView.VIEW_NAME, ui = BaseUI.class)
-@Title("Live - HomeWire")
-public class LiveView extends VerticalLayout implements View {
+@SpringView(name = ControlPanelView.VIEW_NAME, ui = BaseUI.class)
+@Title("Control Panel - HomeWire")
+public class ControlPanelView extends VerticalLayout implements View {
 
-  public static final String VIEW_NAME = "live";
+  public static final String VIEW_NAME = "controlpanel";
 
   private CssLayout dashboard;
 
@@ -48,7 +48,7 @@ public class LiveView extends VerticalLayout implements View {
 
   @PostConstruct
   void init() {
-    Label header = new Label("Live");
+    Label header = new Label("Control Panel");
     header.setStyleName(ValoTheme.LABEL_H1);
     addComponent(header);
 
@@ -120,7 +120,7 @@ public class LiveView extends VerticalLayout implements View {
     if (widgetFactory != null) {
       RefreshableWidget refreshableWidget =
           widgetFactory.createWidget(deviceSetupService
-              .getDeviceNameByIdAndType(liveDataDTO.getId(), liveDataDTO.getType()));
+              .getDeviceDtoByIdAndType(liveDataDTO.getId(), liveDataDTO.getType()));
 
       if (liveDataDTO.getValue().getClass().equals(refreshableWidget.getRefreshType())) {
         refreshableWidget.refresh(liveDataDTO.getValue());
@@ -130,7 +130,8 @@ public class LiveView extends VerticalLayout implements View {
     } else {
       return new RefreshableWidget() {
         @Override
-        public void refresh(Object value) {}
+        public void refresh(Object value) {
+        }
 
         @Override
         public Class getRefreshType() {

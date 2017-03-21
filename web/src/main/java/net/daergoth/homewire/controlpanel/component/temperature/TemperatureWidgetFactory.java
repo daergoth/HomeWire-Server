@@ -1,8 +1,9 @@
-package net.daergoth.homewire.live.component.temperature;
+package net.daergoth.homewire.controlpanel.component.temperature;
 
-import net.daergoth.homewire.live.component.CustomWidgetFactory;
-import net.daergoth.homewire.live.component.RefreshableWidget;
-import net.daergoth.homewire.live.component.PatchedJustGage;
+import net.daergoth.homewire.controlpanel.component.CustomWidgetFactory;
+import net.daergoth.homewire.controlpanel.component.PatchedJustGage;
+import net.daergoth.homewire.controlpanel.component.RefreshableWidget;
+import net.daergoth.homewire.setup.DeviceDTO;
 import org.vaadin.justgage.JustGageConfiguration;
 
 public class TemperatureWidgetFactory implements CustomWidgetFactory {
@@ -10,9 +11,9 @@ public class TemperatureWidgetFactory implements CustomWidgetFactory {
   public static final String CHART_TYPE = "temperature";
 
   @Override
-  public RefreshableWidget createWidget(String label) {
+  public RefreshableWidget createWidget(DeviceDTO device) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
-    gageConfiguration.title = label;
+    gageConfiguration.title = device.getName();
     return new TemperatureGauge(new PatchedJustGage(gageConfiguration));
   }
 

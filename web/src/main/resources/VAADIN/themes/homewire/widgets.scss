@@ -19,6 +19,7 @@
   }
 
   .live-widget-title {
+    text-align: center;
     text-anchor: middle;
     font-family: $font;
     font-size: 15px;
@@ -29,6 +30,7 @@
   }
 
   .live-widget-data {
+    text-align: center;
     text-anchor: middle;
     font-family: $font;
     font-size: 45px;
@@ -37,10 +39,22 @@
   }
 
   .live-widget-type {
+    text-align: center;
     text-anchor: middle;
     font-family: $font;
     font-size: 10px;
     color: #999999;
+  }
+
+  .relay-widget-button {
+    height: 90px;
+    width: 100%;
+    margin-bottom: 7px;
+    text-align: center;
+    font-family: $font;
+    font-size: 45px;
+    line-height: 2;
+    color: black;
   }
 
 }

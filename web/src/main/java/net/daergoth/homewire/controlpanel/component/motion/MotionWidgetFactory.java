@@ -1,32 +1,33 @@
-package net.daergoth.homewire.live.component.relay;
+package net.daergoth.homewire.controlpanel.component.motion;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import net.daergoth.homewire.live.component.CustomWidgetFactory;
-import net.daergoth.homewire.live.component.RefreshableWidget;
+import net.daergoth.homewire.controlpanel.component.CustomWidgetFactory;
+import net.daergoth.homewire.controlpanel.component.RefreshableWidget;
+import net.daergoth.homewire.setup.DeviceDTO;
 
-public class RelayWidgetFactory implements CustomWidgetFactory {
+public class MotionWidgetFactory implements CustomWidgetFactory {
 
-  public static final String CHART_TYPE = "relay";
+  public static final String CHART_TYPE = "motion";
 
   @Override
-  public RefreshableWidget createWidget(String label) {
-    return new RelayWidget(label);
+  public RefreshableWidget createWidget(DeviceDTO device) {
+    return new MotionWidget(device.getName());
   }
 
-  public static class RelayWidget extends RefreshableWidget<Float> {
+  public static class MotionWidget extends RefreshableWidget<Float> {
     private Label titleLabel;
     private Label statusLabel;
     private Label typeLabel;
 
-    public RelayWidget(String title) {
+    public MotionWidget(String title) {
       titleLabel = new Label(title);
       titleLabel.setPrimaryStyleName("live-widget-title");
 
-      statusLabel = new Label("Off");
+      statusLabel = new Label("No");
       statusLabel.setPrimaryStyleName("live-widget-data");
 
-      typeLabel = new Label("Relay");
+      typeLabel = new Label("Motion");
       typeLabel.setPrimaryStyleName("live-widget-type");
 
       VerticalLayout rootLayout = new VerticalLayout(titleLabel, statusLabel, typeLabel);
@@ -38,7 +39,7 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
 
     @Override
     public void refresh(Float value) {
-      statusLabel.setValue(value != 0 ? "On" : "Off");
+      statusLabel.setValue(value != 0 ? "Yes" : "No");
     }
 
     @Override

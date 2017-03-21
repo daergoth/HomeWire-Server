@@ -1,7 +1,7 @@
 package net.daergoth.homewire.processing;
 
-import net.daergoth.homewire.live.LiveDataEntity;
-import net.daergoth.homewire.live.LiveDataRepository;
+import net.daergoth.homewire.controlpanel.LiveDataEntity;
+import net.daergoth.homewire.controlpanel.LiveDataRepository;
 import net.daergoth.homewire.setup.DeviceEntity;
 import net.daergoth.homewire.setup.DeviceSetupRepository;
 import net.daergoth.homewire.statistic.DeviceStateEntity;

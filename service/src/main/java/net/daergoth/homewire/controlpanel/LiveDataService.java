@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live;
+package net.daergoth.homewire.controlpanel;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

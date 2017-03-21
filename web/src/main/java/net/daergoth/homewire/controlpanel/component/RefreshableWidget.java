@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live.component;
+package net.daergoth.homewire.controlpanel.component;
 
 import com.vaadin.ui.CustomComponent;
 

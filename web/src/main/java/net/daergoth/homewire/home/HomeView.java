@@ -24,26 +24,12 @@ public class HomeView extends VerticalLayout implements View {
 
   public static final String VIEW_NAME = "";
 
-  @Autowired
-  private NetworkServer networkServer;
-
-  private boolean state = false;
-
   @PostConstruct
   void init() {
     Label header = new Label("Home");
     header.setStyleName(ValoTheme.LABEL_H1);
 
     addComponent(header);
-
-    Button testButton = new Button("Toggle relay");
-    testButton.addClickListener(event -> {
-      logger.warn("Toggle relay!! state: {}", state);
-      networkServer.sendDeviceCommand(new DeviceCommand((short) 5, state));
-      state = !state;
-    });
-
-    addComponent(testButton);
   }
 
   @Override

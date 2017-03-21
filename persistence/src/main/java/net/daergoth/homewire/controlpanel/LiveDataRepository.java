@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live;
+package net.daergoth.homewire.controlpanel;
 
 import com.mongodb.client.MongoDatabase;
 import net.daergoth.homewire.CustomMongoRepository;
@@ -30,7 +30,7 @@ public class LiveDataRepository extends CustomMongoRepository {
   }
 
   public void saveLiveData(LiveDataEntity liveDataEntity) {
-    logger.info("Saving live data: {}", liveDataEntity);
+    logger.info("Saving controlpanel data: {}", liveDataEntity);
 
     if (liveDataEntity.getValue() == null) {
       logger.warn("Live device data with null value!");

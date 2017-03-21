@@ -46,6 +46,8 @@ public class NetworkServer extends Thread {
   }
 
   public void sendDeviceCommand(DeviceCommand command) {
+    logger.info("Sending device command: {}", command.toString());
+
     commandList.add(command);
   }
 

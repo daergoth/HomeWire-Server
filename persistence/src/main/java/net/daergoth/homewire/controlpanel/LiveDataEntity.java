@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live;
+package net.daergoth.homewire.controlpanel;
 
 
 public class LiveDataEntity {

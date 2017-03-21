@@ -1,4 +1,4 @@
-package net.daergoth.homewire.live.component;
+package net.daergoth.homewire.controlpanel.component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

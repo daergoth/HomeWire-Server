@@ -9,9 +9,9 @@ import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import net.daergoth.homewire.controlpanel.ControlPanelView;
 import net.daergoth.homewire.flow.FlowView;
 import net.daergoth.homewire.home.HomeView;
-import net.daergoth.homewire.live.LiveView;
 import net.daergoth.homewire.setup.SetupView;
 import net.daergoth.homewire.statistic.StatisticView;
 import org.vaadin.teemusa.sidemenu.SideMenu;
@@ -32,8 +32,8 @@ public class BaseUI extends UI implements ViewDisplay {
     menu.addMenuItem("Home", () -> {
       getUI().getNavigator().navigateTo(HomeView.VIEW_NAME);
     });
-    menu.addMenuItem("Live data", () -> {
-      getUI().getNavigator().navigateTo(LiveView.VIEW_NAME);
+    menu.addMenuItem("Control Panel", () -> {
+      getUI().getNavigator().navigateTo(ControlPanelView.VIEW_NAME);
     });
     menu.addMenuItem("Flows", () -> {
       getUI().getNavigator().navigateTo(FlowView.VIEW_NAME);
