@@ -5,7 +5,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -90,13 +89,13 @@ public class ControlPanelView extends VerticalLayout implements View {
         widgetMap.put(liveData.getType() + liveData.getId(), refreshableWidget);
 
         if (panelMap.containsKey(liveData.getType())) {
-          HorizontalLayout innerLayout =
-              (HorizontalLayout) panelMap.get(liveData.getType()).getContent();
+          CssLayout innerLayout =
+              (CssLayout) panelMap.get(liveData.getType()).getContent();
 
           innerLayout.addComponent(refreshableWidget);
 
         } else {
-          HorizontalLayout innerLayout = new HorizontalLayout(refreshableWidget);
+          CssLayout innerLayout = new CssLayout(refreshableWidget);
 
           Panel typePanel = new Panel(
               liveData.getType().substring(0, 1).toUpperCase() + liveData.getType().substring(1),
