@@ -90,10 +90,8 @@
                             <classpathScope>compile</classpathScope>
                             <mainClass>com.vaadin.sass.SassCompiler</mainClass>
                             <arguments>
-                                <argument>src/main/resources/VAADIN/themes/mytheme/styles.scss
-                                </argument>
-                                <argument>src/main/resources/VAADIN/themes/mytheme/styles.css
-                                </argument>
+                                <argument>web/src/main/resources/VAADIN/themes/homewire/styles.scss</argument>
+                                <argument>web/src/main/resources/VAADIN/themes/homewire/styles.css</argument>
                             </arguments>
                         </configuration>
                     </execution>
