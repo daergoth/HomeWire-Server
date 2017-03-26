@@ -3,7 +3,7 @@ package net.daergoth.homewire.flow;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FlowEntity {
+public class FlowDTO {
 
   private Integer id;
 
@@ -11,16 +11,16 @@ public class FlowEntity {
 
   private Integer orderNum;
 
-  private List<ConditionEntity> conditionList;
+  private List<ConditionDTO> conditionList;
 
-  private List<ActionEntity> actionList;
+  private List<ActionDTO> actionList;
 
-  public FlowEntity() {
+  public FlowDTO() {
     conditionList = new LinkedList<>();
     actionList = new LinkedList<>();
   }
 
-  public FlowEntity(Integer id, String name, Integer orderNum) {
+  public FlowDTO(Integer id, String name, Integer orderNum) {
     this.id = id;
     this.name = name;
     this.orderNum = orderNum;
@@ -53,28 +53,19 @@ public class FlowEntity {
     this.orderNum = orderNum;
   }
 
-  public List<ConditionEntity> getConditionList() {
+  public List<ConditionDTO> getConditionList() {
     return conditionList;
   }
 
-  public List<ActionEntity> getActionList() {
+  public List<ActionDTO> getActionList() {
     return actionList;
   }
 
-  public void addCondition(ConditionEntity condition) {
+  public void addCondition(ConditionDTO condition) {
     conditionList.add(condition);
   }
 
-  public void addAction(ActionEntity action) {
+  public void addAction(ActionDTO action) {
     actionList.add(action);
-  }
-
-  @Override
-  public String toString() {
-    return "FlowEntity{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        ", orderNum=" + orderNum +
-        '}';
   }
 }

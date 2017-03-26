@@ -1,6 +1,6 @@
 package net.daergoth.homewire.flow;
 
-public class ConditionEntity {
+public class ActionDTO {
 
   private Short devId;
 
@@ -10,10 +10,10 @@ public class ConditionEntity {
 
   private String parameter;
 
-  public ConditionEntity() {
+  public ActionDTO() {
   }
 
-  public ConditionEntity(Short devId, String devType, String type, String parameter) {
+  public ActionDTO(Short devId, String devType, String type, String parameter) {
     this.devId = devId;
     this.devType = devType;
     this.type = type;

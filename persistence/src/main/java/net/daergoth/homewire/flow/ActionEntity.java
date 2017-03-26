@@ -10,6 +10,9 @@ public class ActionEntity {
 
   private String parameter;
 
+  public ActionEntity() {
+  }
+
   public ActionEntity(Short devId, String devType, String type, String parameter) {
     this.devId = devId;
     this.devType = devType;
