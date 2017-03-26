@@ -1,5 +1,6 @@
 target/
 /src/
+web/src/main/resources/VAADIN/themes/homewire/styles.css
 
 ### STS ###
 .apt_generated
