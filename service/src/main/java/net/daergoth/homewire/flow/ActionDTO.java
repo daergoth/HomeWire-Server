@@ -3,9 +3,9 @@ package net.daergoth.homewire.flow;
 public class ActionDTO {
 
   public enum ActionTypes {
-    Set,
-    Request,
-    Delay
+    SET,
+    REQUEST,
+    DELAY
   }
 
   private Short devId;
@@ -73,13 +73,13 @@ public class ActionDTO {
   private ActionTypes typeStringToEnum(String type) {
     switch (type) {
       case "set":
-        return ActionTypes.Set;
+        return ActionTypes.SET;
       case "request":
-        return ActionTypes.Request;
+        return ActionTypes.REQUEST;
       case "delay":
-        return ActionTypes.Delay;
+        return ActionTypes.DELAY;
     }
 
-    return ActionTypes.Set;
+    return ActionTypes.SET;
   }
 }

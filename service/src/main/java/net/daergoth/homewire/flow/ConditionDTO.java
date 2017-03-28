@@ -3,10 +3,10 @@ package net.daergoth.homewire.flow;
 public class ConditionDTO {
 
   public enum ConditionTypes {
-    Comparision,
-    Request,
-    Interface,
-    Time
+    COMPARISION,
+    REQUEST,
+    INTERFACE,
+    TIME
   }
 
   private Short devId;
@@ -74,13 +74,13 @@ public class ConditionDTO {
   private ConditionTypes typeStringToEnum(String type) {
     switch (type) {
       case "request":
-        return ConditionTypes.Request;
+        return ConditionTypes.REQUEST;
       case "interface":
-        return ConditionTypes.Interface;
+        return ConditionTypes.INTERFACE;
       case "time":
-        return ConditionTypes.Time;
+        return ConditionTypes.TIME;
       default:
-        return ConditionTypes.Comparision;
+        return ConditionTypes.COMPARISION;
     }
   }
 
