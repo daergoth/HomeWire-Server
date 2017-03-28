@@ -65,7 +65,24 @@ public class FlowDTO {
     conditionList.add(condition);
   }
 
+  public void removeCondition(ConditionDTO condition) {
+    conditionList.remove(condition);
+  }
+
   public void addAction(ActionDTO action) {
     actionList.add(action);
+  }
+
+  public void removeAction(ActionDTO action) {
+    actionList.remove(action);
+  }
+
+  @Override
+  public String toString() {
+    return "FlowDTO{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", orderNum=" + orderNum +
+        "}";
   }
 }

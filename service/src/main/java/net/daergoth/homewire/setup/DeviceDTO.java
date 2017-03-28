@@ -62,4 +62,40 @@ public class DeviceDTO {
   public void setTrusted(boolean trusted) {
     isTrusted = trusted;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    DeviceDTO deviceDTO = (DeviceDTO) o;
+
+    if (isTrusted != deviceDTO.isTrusted) {
+      return false;
+    }
+    if (!devId.equals(deviceDTO.devId)) {
+      return false;
+    }
+    if (!category.equals(deviceDTO.category)) {
+      return false;
+    }
+    if (!name.equals(deviceDTO.name)) {
+      return false;
+    }
+    return type.equals(deviceDTO.type);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = devId.hashCode();
+    result = 31 * result + category.hashCode();
+    result = 31 * result + name.hashCode();
+    result = 31 * result + type.hashCode();
+    result = 31 * result + (isTrusted ? 1 : 0);
+    return result;
+  }
 }
