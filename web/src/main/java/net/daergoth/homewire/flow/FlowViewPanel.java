@@ -54,7 +54,7 @@ public class FlowViewPanel extends CustomComponent {
   }
 
   private GridLayout getPanelGrid() {
-    GridLayout panelGrid = new GridLayout(2, 4);
+    GridLayout panelGrid = new GridLayout(2, 5);
     panelGrid.setWidth(100, Unit.PERCENTAGE);
 
     // ROW 1
@@ -111,6 +111,40 @@ public class FlowViewPanel extends CustomComponent {
 
     // ROW 4
     // Condition list
+    generateConditionList(panelGrid);
+
+    // Action list
+    generateActionList(panelGrid);
+
+    // ROW 5
+    // New condition button
+    Button newConditionButton = new Button("New Condition", event -> {
+      ConditionDTO lastConditionDTO =
+          flowDTO.getConditionList().get(flowDTO.getConditionList().size() - 1);
+
+      flowDTO.addCondition(
+          new ConditionDTO(lastConditionDTO.getDevId(), lastConditionDTO.getDevType(),
+              lastConditionDTO.getType(), lastConditionDTO.getParameter()));
+
+      generateConditionList(panelGrid);
+    });
+    panelGrid.addComponent(newConditionButton, 0, 4);
+
+    // New action button
+    Button newActionButton = new Button("New Action", event -> {
+      ActionDTO lastActionDTO = flowDTO.getActionList().get(flowDTO.getActionList().size() - 1);
+
+      flowDTO.addAction(new ActionDTO(lastActionDTO.getDevId(), lastActionDTO.getDevType(),
+          lastActionDTO.getType(), lastActionDTO.getParameter()));
+
+      generateActionList(panelGrid);
+    });
+    panelGrid.addComponent(newActionButton, 1, 4);
+
+    return panelGrid;
+  }
+
+  private void generateConditionList(GridLayout panelGrid) {
     VerticalLayout conditionsVerticalLayout = new VerticalLayout();
     conditionsVerticalLayout.setSizeUndefined();
 
@@ -120,22 +154,19 @@ public class FlowViewPanel extends CustomComponent {
                 condDto -> saveIfPossible()
             )));
 
+    panelGrid.removeComponent(0, 3);
     panelGrid.addComponent(conditionsVerticalLayout, 0, 3);
+  }
 
-    // Action list
+  private void generateActionList(GridLayout panelGrid) {
     VerticalLayout actionsVerticalLayout = new VerticalLayout();
     actionsVerticalLayout.setSizeUndefined();
 
     flowDTO.getActionList().forEach(actionDTO -> actionsVerticalLayout.addComponent(
         new ActionPanel(actionDTO, actionWidgetRepository, actDto -> saveIfPossible())));
 
+    panelGrid.removeComponent(1, 3);
     panelGrid.addComponent(actionsVerticalLayout, 1, 3);
-
-    return panelGrid;
-  }
-
-  private HorizontalLayout getConditionLayoutFromConditionDto() {
-    return new HorizontalLayout();
   }
 
   public void setSaveConsumer(Consumer<FlowDTO> saveConsumer) {
