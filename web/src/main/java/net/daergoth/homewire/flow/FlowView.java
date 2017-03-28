@@ -4,22 +4,15 @@ import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import net.daergoth.homewire.setup.DeviceSetupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.stackpanel.StackPanel;
 import org.vaadin.ui.NumberField;
 
-import java.util.List;
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @SpringView(name = FlowView.VIEW_NAME)
 @Title("Flows - HomeWire")
@@ -57,7 +50,9 @@ public class FlowView extends VerticalLayout implements View {
     List<FlowDTO> flows = flowService.getAllFlowDtos();
 
     flows.forEach(flowDTO -> {
-      addComponent(getPanelForFlow(flowDTO));
+      FlowViewPanel flowViewPanel = new FlowViewPanel(flowDTO, deviceSetupService);
+      flowViewPanel.setSaveConsumer(dto -> flowService.saveFlowDto(dto));
+      addComponent(flowViewPanel);
     });
   }
 

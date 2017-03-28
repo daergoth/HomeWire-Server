@@ -65,12 +65,20 @@ public class FlowDTO {
     conditionList.add(condition);
   }
 
+  public void addCondition(int index, ConditionDTO condition) {
+    conditionList.add(index, condition);
+  }
+
   public void removeCondition(ConditionDTO condition) {
     conditionList.remove(condition);
   }
 
   public void addAction(ActionDTO action) {
     actionList.add(action);
+  }
+
+  public void addAction(int index, ActionDTO action) {
+    actionList.add(index, action);
   }
 
   public void removeAction(ActionDTO action) {

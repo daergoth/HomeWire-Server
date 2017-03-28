@@ -2,11 +2,20 @@ package net.daergoth.homewire.flow;
 
 public class ConditionDTO {
 
+  public enum ConditionTypes {
+    Comparision,
+    Request,
+    Interface,
+    Time
+  }
+
   private Short devId;
 
   private String devType;
 
   private String type;
+
+  private ConditionTypes conditionType;
 
   private String parameter;
 
@@ -17,6 +26,7 @@ public class ConditionDTO {
     this.devId = devId;
     this.devType = devType;
     this.type = type;
+    this.conditionType = typeStringToEnum(type);
     this.parameter = parameter;
   }
 
@@ -42,6 +52,15 @@ public class ConditionDTO {
 
   public void setType(String type) {
     this.type = type;
+    this.conditionType = typeStringToEnum(type);
+  }
+
+  public ConditionTypes getConditionType() {
+    return conditionType;
+  }
+
+  public void setConditionType(ConditionTypes conditionType) {
+    this.conditionType = conditionType;
   }
 
   public String getParameter() {
@@ -51,4 +70,18 @@ public class ConditionDTO {
   public void setParameter(String parameter) {
     this.parameter = parameter;
   }
+
+  private ConditionTypes typeStringToEnum(String type) {
+    switch (type) {
+      case "request":
+        return ConditionTypes.Request;
+      case "interface":
+        return ConditionTypes.Interface;
+      case "time":
+        return ConditionTypes.Time;
+      default:
+        return ConditionTypes.Comparision;
+    }
+  }
+
 }
