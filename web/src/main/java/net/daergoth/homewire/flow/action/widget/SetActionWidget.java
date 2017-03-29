@@ -5,6 +5,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import net.daergoth.homewire.flow.ActionDTO;
 import net.daergoth.homewire.flow.DeviceViewDTO;
+import net.daergoth.homewire.setup.DeviceDTO;
 import net.daergoth.homewire.setup.DeviceSetupService;
 import org.modelmapper.ModelMapper;
 
@@ -41,13 +42,13 @@ public class SetActionWidget extends ActionWidget {
                 .collect(Collectors.toList())
         )
     );
-    devicesComboBox.select(
-        modelMapper.map(
-            deviceSetupService
-                .getDeviceDtoByIdAndType(actionDTO.getDevId(), actionDTO.getDevType()),
-            DeviceViewDTO.class
-        )
-    );
+
+    DeviceDTO selectedDeviceDTO = deviceSetupService
+        .getDeviceDtoByIdAndType(actionDTO.getDevId(), actionDTO.getDevType());
+    if (selectedDeviceDTO != null) {
+      devicesComboBox.select(modelMapper.map(selectedDeviceDTO, DeviceViewDTO.class));
+    }
+
     devicesComboBox.addValueChangeListener(event -> {
       DeviceViewDTO selected = (DeviceViewDTO) event.getProperty().getValue();
 

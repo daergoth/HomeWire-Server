@@ -4,6 +4,6 @@ import net.daergoth.homewire.flow.ConditionDTO;
 
 public interface ConditionWidgetFactory {
 
-  ConditionalWidget createWidget(ConditionDTO conditionDTO);
+  ConditionWidget createWidget(ConditionDTO conditionDTO);
 
 }

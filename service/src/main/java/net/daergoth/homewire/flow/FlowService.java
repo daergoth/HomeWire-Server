@@ -23,11 +23,16 @@ public class FlowService {
   public void saveFlowDto(FlowDTO flowDTO) {
     FlowEntity flowEntity = modelMapper.map(flowDTO, FlowEntity.class);
     flowDTO.getConditionList()
-        .forEach(conditionDTO -> flowEntity.addCondition(modelMapper.map(conditionDTO, ConditionEntity.class)));
+        .forEach(conditionDTO -> flowEntity
+            .addCondition(modelMapper.map(conditionDTO, ConditionEntity.class)));
     flowDTO.getActionList()
         .forEach(actionDTO -> flowEntity.addAction(modelMapper.map(actionDTO, ActionEntity.class)));
 
     flowRepository.saveFlow(flowEntity);
+  }
+
+  public void removeFlowDto(Integer flowId) {
+    flowRepository.removeFlow(flowId);
   }
 
   public List<FlowDTO> getAllFlowDtos() {
@@ -42,7 +47,7 @@ public class FlowService {
 
           flowEntity.getActionList()
               .forEach(actionEntity ->
-                dto.addAction(modelMapper.map(actionEntity, ActionDTO.class))
+                  dto.addAction(modelMapper.map(actionEntity, ActionDTO.class))
               );
 
           return dto;

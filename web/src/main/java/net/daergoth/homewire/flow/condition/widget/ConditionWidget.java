@@ -6,7 +6,7 @@ import net.daergoth.homewire.flow.ConditionDTO;
 
 import java.util.function.Consumer;
 
-public class ConditionalWidget extends CustomComponent {
+public class ConditionWidget extends CustomComponent {
 
   protected final HorizontalLayout mainLayout;
 
@@ -14,7 +14,7 @@ public class ConditionalWidget extends CustomComponent {
 
   protected Consumer<ConditionDTO> changeListener;
 
-  public ConditionalWidget(ConditionDTO conditionDTO) {
+  public ConditionWidget(ConditionDTO conditionDTO) {
     this.conditionDTO = conditionDTO;
     this.mainLayout = new HorizontalLayout();
     this.changeListener = dto -> {};

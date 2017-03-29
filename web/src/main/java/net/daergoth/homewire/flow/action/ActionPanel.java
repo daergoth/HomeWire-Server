@@ -1,10 +1,12 @@
 package net.daergoth.homewire.flow.action;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import net.daergoth.homewire.flow.ActionDTO;
 import net.daergoth.homewire.flow.TypeViewDTO;
 import net.daergoth.homewire.flow.action.widget.ActionWidget;
@@ -73,7 +75,12 @@ public class ActionPanel extends CustomComponent {
       mainGridLayout.removeComponent(1, 0);
       mainGridLayout.addComponent(currentActionWidget, 1, 0);
     });
-    mainGridLayout.addComponent(mainTypeComboBox, 0, 0);
+
+    Button deleteButton = new Button("Delete", event -> {
+      changeListener.accept(null);
+    });
+
+    mainGridLayout.addComponent(new VerticalLayout(mainTypeComboBox, deleteButton), 0, 0);
 
     mainGridLayout.addComponent(currentActionWidget, 1, 0);
 

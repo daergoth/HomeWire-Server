@@ -1,14 +1,16 @@
 package net.daergoth.homewire.flow.condition;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import net.daergoth.homewire.flow.ConditionDTO;
 import net.daergoth.homewire.flow.TypeViewDTO;
+import net.daergoth.homewire.flow.condition.widget.ConditionWidget;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidgetRepository;
-import net.daergoth.homewire.flow.condition.widget.ConditionalWidget;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -23,7 +25,7 @@ public class ConditionPanel extends CustomComponent {
 
   private final ConditionDTO conditionDTO;
 
-  private ConditionalWidget currentConditionalWidget;
+  private ConditionWidget currentConditionWidget;
 
   private Consumer<ConditionDTO> changeListener;
 
@@ -37,10 +39,10 @@ public class ConditionPanel extends CustomComponent {
     this.mainPanel = new Panel("Condition");
     this.mainTypeComboBox = new ComboBox("Type");
 
-    this.currentConditionalWidget = conditionWidgetRepository
+    this.currentConditionWidget = conditionWidgetRepository
         .getFactory(TypeViewDTO.ConditionTypes.ofConditionDto(conditionDTO))
         .createWidget(conditionDTO);
-    currentConditionalWidget.setChangeListener(changeListener);
+    currentConditionWidget.setChangeListener(changeListener);
 
     this.changeListener = changeListener;
 
@@ -65,17 +67,22 @@ public class ConditionPanel extends CustomComponent {
       TypeViewDTO.ConditionTypes selected =
           (TypeViewDTO.ConditionTypes) event.getProperty().getValue();
 
-      currentConditionalWidget = conditionWidgetRepository
+      currentConditionWidget = conditionWidgetRepository
           .getFactory(selected)
           .createWidget(conditionDTO);
-      currentConditionalWidget.setChangeListener(changeListener);
+      currentConditionWidget.setChangeListener(changeListener);
 
       mainGridLayout.removeComponent(1, 0);
-      mainGridLayout.addComponent(currentConditionalWidget, 1, 0);
+      mainGridLayout.addComponent(currentConditionWidget, 1, 0);
     });
-    mainGridLayout.addComponent(mainTypeComboBox, 0, 0);
 
-    mainGridLayout.addComponent(currentConditionalWidget, 1, 0);
+    Button deleteButton = new Button("Delete", event -> {
+      changeListener.accept(null);
+    });
+
+    mainGridLayout.addComponent(new VerticalLayout(mainTypeComboBox, deleteButton), 0, 0);
+
+    mainGridLayout.addComponent(currentConditionWidget, 1, 0);
 
     mainPanel.setContent(mainGridLayout);
   }

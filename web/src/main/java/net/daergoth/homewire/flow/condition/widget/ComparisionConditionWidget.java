@@ -5,6 +5,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import net.daergoth.homewire.flow.ConditionDTO;
 import net.daergoth.homewire.flow.DeviceViewDTO;
+import net.daergoth.homewire.setup.DeviceDTO;
 import net.daergoth.homewire.setup.DeviceSetupService;
 import org.modelmapper.ModelMapper;
 
@@ -12,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ComparisionConditionWidget extends ConditionalWidget {
+public class ComparisionConditionWidget extends ConditionWidget {
 
   private final DeviceSetupService deviceSetupService;
 
@@ -45,13 +46,13 @@ public class ComparisionConditionWidget extends ConditionalWidget {
                 .collect(Collectors.toList())
         )
     );
-    devicesComboBox.select(
-        modelMapper.map(
-            deviceSetupService
-                .getDeviceDtoByIdAndType(conditionDTO.getDevId(), conditionDTO.getDevType()),
-            DeviceViewDTO.class
-        )
-    );
+
+    DeviceDTO selectedDeviceDTO = deviceSetupService
+        .getDeviceDtoByIdAndType(conditionDTO.getDevId(), conditionDTO.getDevType());
+    if (selectedDeviceDTO != null) {
+      devicesComboBox.select(modelMapper.map(selectedDeviceDTO, DeviceViewDTO.class));
+    }
+
     devicesComboBox.addValueChangeListener(event -> {
       DeviceViewDTO selected = (DeviceViewDTO) event.getProperty().getValue();
 

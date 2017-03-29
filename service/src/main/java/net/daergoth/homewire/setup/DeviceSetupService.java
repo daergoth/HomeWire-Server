@@ -66,8 +66,12 @@ public class DeviceSetupService {
   }
 
   public DeviceDTO getDeviceDtoByIdAndType(Short devId, String type) {
-    return modelMapper
-        .map(deviceSetupRepository.getDeviceEntityByIdAndType(devId, type), DeviceDTO.class);
+    DeviceEntity entity = deviceSetupRepository.getDeviceEntityByIdAndType(devId, type);
+    if (entity == null) {
+      return null;
+    } else {
+      return modelMapper.map(entity, DeviceDTO.class);
+    }
   }
 
   public String getDeviceNameByIdAndType(Short devId, String type) {

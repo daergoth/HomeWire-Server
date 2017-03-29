@@ -34,6 +34,17 @@ public class FlowRepository extends CustomMongoRepository {
 
   public void saveFlow(FlowEntity flowEntity) {
 
+    if (flowEntity.getId() == null) {
+      Integer nextId = collection.find()
+          .projection(new Document("flow_id", 1))
+          .sort(new Document("flow_id", -1))
+          .limit(1)
+          .first()
+          .getInteger("flow_id") + 1;
+
+      flowEntity.setId(nextId);
+    }
+
     Document filter = new Document()
         .append("flow_id", flowEntity.getId());
 
@@ -71,6 +82,10 @@ public class FlowRepository extends CustomMongoRepository {
         .upsert(true);
 
     collection.findOneAndUpdate(filter, entityDocument, options);
+  }
+
+  public void removeFlow(Integer flowId) {
+    collection.deleteOne(new Document("flow_id", flowId));
   }
 
   public List<FlowEntity> getAllFlows() {

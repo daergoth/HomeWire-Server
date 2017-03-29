@@ -12,8 +12,6 @@ import net.daergoth.homewire.flow.action.ActionPanel;
 import net.daergoth.homewire.flow.action.widget.ActionWidgetRepository;
 import net.daergoth.homewire.flow.condition.ConditionPanel;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidgetRepository;
-import net.daergoth.homewire.setup.DeviceSetupService;
-import org.modelmapper.ModelMapper;
 import org.vaadin.addons.stackpanel.StackPanel;
 
 import java.util.function.Consumer;
@@ -27,26 +25,21 @@ public class FlowViewPanel extends CustomComponent {
 
   private Consumer<FlowDTO> saveConsumer;
 
-  private final DeviceSetupService deviceSetupService;
-
-  private final ModelMapper modelMapper;
-
   private final ConditionWidgetRepository conditionWidgetRepository;
 
   private final ActionWidgetRepository actionWidgetRepository;
 
-  public FlowViewPanel(FlowDTO flowDTO, DeviceSetupService deviceSetupService,
-                       ModelMapper modelMapper,
+  public FlowViewPanel(FlowDTO flowDTO,
                        ConditionWidgetRepository conditionWidgetRepository,
                        ActionWidgetRepository actionWidgetRepository) {
     this.flowDTO = flowDTO;
     this.innerPanel = new Panel(flowDTO.getName());
-    this.deviceSetupService = deviceSetupService;
-    this.modelMapper = modelMapper;
     this.conditionWidgetRepository = conditionWidgetRepository;
     this.actionWidgetRepository = actionWidgetRepository;
 
-    StackPanel.extend(innerPanel).setToggleIconsEnabled(false);
+    StackPanel stackPanel = StackPanel.extend(innerPanel);
+    stackPanel.setToggleIconsEnabled(false);
+    stackPanel.close();
 
     innerPanel.setContent(getPanelGrid());
 
@@ -71,6 +64,12 @@ public class FlowViewPanel extends CustomComponent {
       }
     });
     panelGrid.addComponent(nameTextField, 0, 0);
+
+    // Delete flow button
+    Button deleteFlow = new Button("Delete Flow", event -> {
+      saveConsumer.accept(null);
+    });
+    panelGrid.addComponent(deleteFlow, 1, 0);
 
     // ROW 2
     // Order number
@@ -119,8 +118,14 @@ public class FlowViewPanel extends CustomComponent {
     // ROW 5
     // New condition button
     Button newConditionButton = new Button("New Condition", event -> {
-      ConditionDTO lastConditionDTO =
-          flowDTO.getConditionList().get(flowDTO.getConditionList().size() - 1);
+      ConditionDTO lastConditionDTO;
+      Integer lastConditionIndex = flowDTO.getConditionList().size() - 1;
+
+      if (lastConditionIndex > -1) {
+        lastConditionDTO = flowDTO.getConditionList().get(lastConditionIndex);
+      } else {
+        lastConditionDTO = new ConditionDTO((short) 0, "", "lessthan", "0");
+      }
 
       flowDTO.addCondition(
           new ConditionDTO(lastConditionDTO.getDevId(), lastConditionDTO.getDevType(),
@@ -132,7 +137,13 @@ public class FlowViewPanel extends CustomComponent {
 
     // New action button
     Button newActionButton = new Button("New Action", event -> {
-      ActionDTO lastActionDTO = flowDTO.getActionList().get(flowDTO.getActionList().size() - 1);
+      ActionDTO lastActionDTO;
+      Integer lastActionIndex = flowDTO.getActionList().size() - 1;
+      if (lastActionIndex > -1) {
+        lastActionDTO = flowDTO.getActionList().get(lastActionIndex);
+      } else {
+        lastActionDTO = new ActionDTO((short) 0, "", "set", "0");
+      }
 
       flowDTO.addAction(new ActionDTO(lastActionDTO.getDevId(), lastActionDTO.getDevType(),
           lastActionDTO.getType(), lastActionDTO.getParameter()));
@@ -151,7 +162,14 @@ public class FlowViewPanel extends CustomComponent {
     flowDTO.getConditionList().forEach(
         conditionDTO -> conditionsVerticalLayout
             .addComponent(new ConditionPanel(conditionDTO, conditionWidgetRepository,
-                condDto -> saveIfPossible()
+                condDto -> {
+                  if (condDto == null) {
+                    flowDTO.removeCondition(conditionDTO);
+                    generateConditionList(panelGrid);
+                  }
+
+                  saveIfPossible();
+                }
             )));
 
     panelGrid.removeComponent(0, 3);
@@ -163,7 +181,14 @@ public class FlowViewPanel extends CustomComponent {
     actionsVerticalLayout.setSizeUndefined();
 
     flowDTO.getActionList().forEach(actionDTO -> actionsVerticalLayout.addComponent(
-        new ActionPanel(actionDTO, actionWidgetRepository, actDto -> saveIfPossible())));
+        new ActionPanel(actionDTO, actionWidgetRepository, actDto -> {
+          if (actDto == null) {
+            flowDTO.removeAction(actionDTO);
+            generateActionList(panelGrid);
+          }
+
+          saveIfPossible();
+        })));
 
     panelGrid.removeComponent(1, 3);
     panelGrid.addComponent(actionsVerticalLayout, 1, 3);
