@@ -2,7 +2,7 @@ package net.daergoth.homewire.flow.condition.widget;
 
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
-import net.daergoth.homewire.flow.ConditionDTO;
+import net.daergoth.homewire.flow.persistence.ConditionDTO;
 
 import java.util.function.Consumer;
 

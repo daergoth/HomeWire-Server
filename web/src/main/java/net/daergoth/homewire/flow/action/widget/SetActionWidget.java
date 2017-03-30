@@ -3,7 +3,7 @@ package net.daergoth.homewire.flow.action.widget;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
-import net.daergoth.homewire.flow.ActionDTO;
+import net.daergoth.homewire.flow.persistence.ActionDTO;
 import net.daergoth.homewire.flow.DeviceViewDTO;
 import net.daergoth.homewire.setup.DeviceDTO;
 import net.daergoth.homewire.setup.DeviceSetupService;

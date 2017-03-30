@@ -7,7 +7,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import net.daergoth.homewire.flow.ConditionDTO;
+import net.daergoth.homewire.flow.persistence.ConditionDTO;
 import net.daergoth.homewire.flow.TypeViewDTO;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidget;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidgetRepository;

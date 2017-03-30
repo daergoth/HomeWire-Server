@@ -4,9 +4,9 @@ public class DeviceCommand {
 
   private Short id;
 
-  private boolean targetState;
+  private Float targetState;
 
-  public DeviceCommand(Short id, boolean targetState) {
+  public DeviceCommand(Short id, Float targetState) {
     this.id = id;
     this.targetState = targetState;
   }
@@ -19,11 +19,11 @@ public class DeviceCommand {
     this.id = id;
   }
 
-  public boolean isTargetState() {
+  public Float getTargetState() {
     return targetState;
   }
 
-  public void setTargetState(boolean targetState) {
+  public void setTargetState(Float targetState) {
     this.targetState = targetState;
   }
 

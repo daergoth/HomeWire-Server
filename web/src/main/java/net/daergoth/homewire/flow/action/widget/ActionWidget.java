@@ -2,7 +2,7 @@ package net.daergoth.homewire.flow.action.widget;
 
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
-import net.daergoth.homewire.flow.ActionDTO;
+import net.daergoth.homewire.flow.persistence.ActionDTO;
 
 import java.util.function.Consumer;
 

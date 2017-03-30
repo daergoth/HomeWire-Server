@@ -1,12 +1,8 @@
 package net.daergoth.homewire;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.daergoth.homewire.processing.DeviceProcessingService;
-import net.daergoth.homewire.processing.ProcessableDeviceDataDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -15,18 +11,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
-@Component
 public class NetworkServer extends Thread {
 
   private final Logger logger = LoggerFactory.getLogger(NetworkServer.class);
 
   private final ObjectMapper objectMapper;
 
-  private final DeviceProcessingService processingService;
+  private Consumer<DeviceData> dataProcessor;
 
   private ServerSocket serverSocket;
 
@@ -34,11 +29,10 @@ public class NetworkServer extends Thread {
 
   private boolean isRunning = true;
 
-  @Autowired
-  public NetworkServer(ObjectMapper objectMapper,
-                       DeviceProcessingService processingService) throws IOException {
+  public NetworkServer(ObjectMapper objectMapper) throws IOException {
     this.objectMapper = objectMapper;
-    this.processingService = processingService;
+    this.dataProcessor = deviceData -> {
+    };
 
     commandList = new CopyOnWriteArrayList<>();
 
@@ -81,7 +75,7 @@ public class NetworkServer extends Thread {
 
           logger.info("Incoming message: {}", dataJson);
 
-          handleIncomingData(objectMapper.readValue(dataJson, DeviceData.class));
+          dataProcessor.accept(objectMapper.readValue(dataJson, DeviceData.class));
         }
 
         sleep(10);
@@ -94,13 +88,7 @@ public class NetworkServer extends Thread {
 
   }
 
-  private void handleIncomingData(DeviceData data) {
-    processingService.processDeviceData(
-        new ProcessableDeviceDataDTO(data.getId(),
-            data.getCategory(),
-            data.getType(),
-            data.getValue(),
-            ZonedDateTime.now()));
+  public void setDataProcessor(Consumer<DeviceData> dataProcessor) {
+    this.dataProcessor = dataProcessor;
   }
-
 }

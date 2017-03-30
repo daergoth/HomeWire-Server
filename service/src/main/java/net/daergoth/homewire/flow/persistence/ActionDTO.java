@@ -1,4 +1,4 @@
-package net.daergoth.homewire.flow;
+package net.daergoth.homewire.flow.persistence;
 
 public class ActionDTO {
 

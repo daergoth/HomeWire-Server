@@ -2,6 +2,8 @@ package net.daergoth.homewire.processing;
 
 import net.daergoth.homewire.controlpanel.LiveDataEntity;
 import net.daergoth.homewire.controlpanel.LiveDataRepository;
+import net.daergoth.homewire.flow.execution.DeviceDataChangeDTO;
+import net.daergoth.homewire.flow.execution.FlowExecutorService;
 import net.daergoth.homewire.setup.DeviceEntity;
 import net.daergoth.homewire.setup.DeviceSetupRepository;
 import net.daergoth.homewire.statistic.DeviceStateEntity;
@@ -10,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
 public class DeviceProcessingService {
 
   private final StatisticDataRepository statisticDataRepository;
@@ -19,16 +20,19 @@ public class DeviceProcessingService {
 
   private final DeviceSetupRepository deviceSetupRepository;
 
+  private final FlowExecutorService flowExecutorService;
+
   private final ModelMapper modelMapper;
 
-  @Autowired
   public DeviceProcessingService(StatisticDataRepository statisticDataRepository,
                                  ModelMapper modelMapper, LiveDataRepository liveDataRepository,
-                                 DeviceSetupRepository deviceSetupRepository) {
+                                 DeviceSetupRepository deviceSetupRepository,
+                                 FlowExecutorService flowExecutorService) {
     this.statisticDataRepository = statisticDataRepository;
     this.modelMapper = modelMapper;
     this.liveDataRepository = liveDataRepository;
     this.deviceSetupRepository = deviceSetupRepository;
+    this.flowExecutorService = flowExecutorService;
   }
 
   public void processDeviceData(ProcessableDeviceDataDTO dataDTO) {
@@ -48,6 +52,9 @@ public class DeviceProcessingService {
           )
       );
     }
+
+    flowExecutorService
+        .processDeviceDataChange(modelMapper.map(dataDTO, DeviceDataChangeDTO.class));
   }
 
 }

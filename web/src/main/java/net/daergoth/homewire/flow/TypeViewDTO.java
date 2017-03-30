@@ -1,5 +1,8 @@
 package net.daergoth.homewire.flow;
 
+import net.daergoth.homewire.flow.persistence.ActionDTO;
+import net.daergoth.homewire.flow.persistence.ConditionDTO;
+
 public class TypeViewDTO {
 
   public enum ConditionTypes {

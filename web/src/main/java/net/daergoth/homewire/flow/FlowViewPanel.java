@@ -12,6 +12,9 @@ import net.daergoth.homewire.flow.action.ActionPanel;
 import net.daergoth.homewire.flow.action.widget.ActionWidgetRepository;
 import net.daergoth.homewire.flow.condition.ConditionPanel;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidgetRepository;
+import net.daergoth.homewire.flow.persistence.ActionDTO;
+import net.daergoth.homewire.flow.persistence.ConditionDTO;
+import net.daergoth.homewire.flow.persistence.FlowDTO;
 import org.vaadin.addons.stackpanel.StackPanel;
 
 import java.util.function.Consumer;

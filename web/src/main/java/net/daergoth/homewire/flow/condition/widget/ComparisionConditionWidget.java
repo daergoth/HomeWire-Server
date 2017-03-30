@@ -3,7 +3,7 @@ package net.daergoth.homewire.flow.condition.widget;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
-import net.daergoth.homewire.flow.ConditionDTO;
+import net.daergoth.homewire.flow.persistence.ConditionDTO;
 import net.daergoth.homewire.flow.DeviceViewDTO;
 import net.daergoth.homewire.setup.DeviceDTO;
 import net.daergoth.homewire.setup.DeviceSetupService;

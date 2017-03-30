@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -75,5 +76,25 @@ public class LiveDataRepository extends CustomMongoRepository {
     }
 
     return result;
+  }
+
+  public LiveDataEntity getCurrentDeviceDataForIdAndType(Short deviceId, String deviceType) {
+    Document match = new Document()
+        .append("$match", new Document()
+            .append("type", deviceType)
+            .append("values." + deviceId,
+                new Document("$exists", true)
+            )
+        );
+
+    Document project = new Document()
+        .append("$project", new Document()
+            .append("_id", 0)
+            .append("value", "$values." + deviceId)
+        );
+
+    Document valueDoc = collection.aggregate(Arrays.asList(match, project)).first();
+
+    return new LiveDataEntity(deviceId, deviceType, valueDoc.getDouble("value").floatValue());
   }
 }

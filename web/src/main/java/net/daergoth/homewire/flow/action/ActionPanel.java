@@ -7,7 +7,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import net.daergoth.homewire.flow.ActionDTO;
+import net.daergoth.homewire.flow.persistence.ActionDTO;
 import net.daergoth.homewire.flow.TypeViewDTO;
 import net.daergoth.homewire.flow.action.widget.ActionWidget;
 import net.daergoth.homewire.flow.action.widget.ActionWidgetRepository;

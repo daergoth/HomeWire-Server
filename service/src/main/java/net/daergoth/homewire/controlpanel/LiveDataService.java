@@ -25,4 +25,10 @@ public class LiveDataService {
         .map(liveDataEntity -> modelMapper.map(liveDataEntity, LiveDataDTO.class))
         .collect(Collectors.toList());
   }
+
+  public LiveDataDTO getCurrentDeviceDataForIdAndType(Short deviceId, String deviceType) {
+    return modelMapper
+        .map(liveDataRepository.getCurrentDeviceDataForIdAndType(deviceId, deviceType),
+            LiveDataDTO.class);
+  }
 }

@@ -10,6 +10,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import net.daergoth.homewire.flow.action.widget.ActionWidgetRepository;
 import net.daergoth.homewire.flow.condition.widget.ConditionWidgetRepository;
+import net.daergoth.homewire.flow.persistence.FlowDTO;
+import net.daergoth.homewire.flow.persistence.FlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;

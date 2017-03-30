@@ -38,7 +38,12 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
       statusLabel.setPrimaryStyleName("live-widget-data");
 
       statusButton = new NativeButton("Off", event -> {
-        netServer.sendDeviceCommand(new DeviceCommand(devId, !this.statusLabel.equals("On")));
+        netServer.sendDeviceCommand(
+            new DeviceCommand(
+                devId,
+                this.statusLabel.equals("On") ? 0f : 1f
+            )
+        );
       });
       statusButton.setPrimaryStyleName("relay-widget-button");
 
@@ -55,8 +60,7 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
 
     @Override
     public void refresh(Float value) {
-      //statusLabel.setValue(value != 0 ? "On" : "Off");
-      statusButton.setCaption(value != 0 ? "On" : "Off");
+      statusButton.setCaption(value < 1e-5 ? "Off" : "On");
     }
 
     @Override
