@@ -16,16 +16,13 @@ public class TimeSeries {
 
   public TimeSeries(String id, String name, String type) {
     this.id = id;
-    this.name = name;
+    if (name != null) {
+      this.name = name;
+    } else {
+      this.name = "DELETED";
+    }
     this.type = type;
     this.seriesDataList = new LinkedList<>();
-  }
-
-  public TimeSeries(String id, String name, String type, List<TimeSeriesData> seriesData) {
-    this.id = id;
-    this.name = name;
-    this.type = type;
-    this.seriesDataList = seriesData;
   }
 
   public void addData(TimeSeriesData seriesData) {

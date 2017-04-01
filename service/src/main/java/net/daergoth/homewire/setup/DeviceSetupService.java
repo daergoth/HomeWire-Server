@@ -75,7 +75,11 @@ public class DeviceSetupService {
   }
 
   public String getDeviceNameByIdAndType(Short devId, String type) {
-    return deviceSetupRepository.getDeviceEntityByIdAndType(devId, type).getName();
+    DeviceEntity deviceEntity = deviceSetupRepository.getDeviceEntityByIdAndType(devId, type);
+    if (deviceEntity == null) {
+      return null;
+    }
+    return deviceEntity.getName();
   }
 
   public List<DeviceDTO> getDeviceDtosByName(String name) {
@@ -94,6 +98,10 @@ public class DeviceSetupService {
 
   public void updateDeviceDto(DeviceDTO deviceDTO) {
     deviceSetupRepository.updateDeviceEntity(modelMapper.map(deviceDTO, DeviceEntity.class));
+  }
+
+  public void removeDeviceDtoByDevIdAndDevType(Short devId, String devType) {
+    deviceSetupRepository.removeDeviceDtoByDevIdAndDevType(devId, devType);
   }
 
 }

@@ -13,7 +13,12 @@ public class TemperatureWidgetFactory implements CustomWidgetFactory {
   @Override
   public RefreshableWidget createWidget(DeviceDTO device) {
     JustGageConfiguration gageConfiguration = getGageConfiguration();
-    gageConfiguration.title = device.getName();
+
+    if (device == null) {
+      gageConfiguration.title = "DELETED";
+    } else {
+      gageConfiguration.title = device.getName();
+    }
     return new TemperatureGauge(new PatchedJustGage(gageConfiguration));
   }
 

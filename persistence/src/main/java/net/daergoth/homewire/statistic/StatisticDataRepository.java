@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Repository
@@ -239,6 +240,59 @@ public class StatisticDataRepository extends CustomMongoRepository {
                 .parse(dateFormat.format(document.getDate("date")), dateTimeFormatter),
             stateInterval)
         ));
+
+    return result;
+  }
+
+  public List<DeviceStateEntity> getDeviceStateForDevIdAndDevType(Short devId, String devType) {
+
+    List<DeviceStateEntity> result = new LinkedList<>();
+
+    List<Document> aggregateDocs = Arrays.asList(
+        new Document()
+            .append("$match", new Document()
+                .append("dev_id", devId)
+                .append("type", devType)),
+        new Document()
+            .append("$unwind", "$values"),
+        new Document()
+            .append("$project", new Document()
+                .append("_id", 0)
+                .append("dev_id", 1)
+                .append("type", 1)
+                .append("date", new Document()
+                    .append("$add", Arrays.asList(
+                        "$date_hour",
+                        new Document()
+                            .append("$multiply", Arrays.asList(
+                                "$values.minute",
+                                60000
+                            ))
+                    ))
+                )
+                .append("ave", new Document()
+                    .append("$divide", Arrays.asList(
+                        "$values.sum",
+                        "$values.num"
+                    ))
+                )
+            ),
+        new Document()
+            .append("$sort", new Document("date", 1))
+    );
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+
+    collection.aggregate(aggregateDocs)
+        .forEach((Block<? super Document>) document -> result.add(new DeviceStateEntity(
+            document.getInteger("dev_id").shortValue(),
+            document.getString("type"),
+            document.getDouble("ave").floatValue(),
+            ZonedDateTime
+                .parse(dateFormat.format(document.getDate("date")), dateTimeFormatter),
+            DeviceStateEntity.StateInterval.MINUTE
+        )));
 
     return result;
   }

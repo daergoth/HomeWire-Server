@@ -179,4 +179,12 @@ public class DeviceSetupRepository extends CustomMongoRepository {
 
     collection.updateOne(query, update);
   }
+
+  public void removeDeviceDtoByDevIdAndDevType(Short devId, String devType) {
+    Document filter = new Document()
+        .append("dev_id", devId)
+        .append("type", devType);
+
+    collection.deleteOne(filter);
+  }
 }
