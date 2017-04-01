@@ -39,10 +39,15 @@ public class StatisticDeviceDataService {
         .collect(Collectors.toList());
   }
 
+  public void removeStatsForDevIdAndDevType(Short devId, String devType) {
+    statisticDataRepository.removeStatsForDevIdAndDevType(devId, devType);
+  }
+
   public String exportDataToCsv(Short devId, String devType, String fileNamePrefix) {
     logger.info("Exporting data for device: id:{}, type:{}", devId, devType);
     String fileName =
-        (fileNamePrefix + "-" + devId + "-" + devType + "-" + LocalDateTime.now() + ".csv")
+        (fileNamePrefix.replace(" ", "") + "-" + devId + "-" + devType + "-" + LocalDateTime.now()
+            + ".csv")
             .replace(':', '-');
 
     try {

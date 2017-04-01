@@ -31,4 +31,8 @@ public class LiveDataService {
         .map(liveDataRepository.getCurrentDeviceDataForIdAndType(deviceId, deviceType),
             LiveDataDTO.class);
   }
+
+  public void removeCurrentDeviceDataForDevIdAndDevType(Short devId, String devType) {
+    liveDataRepository.removeCurrentDeviceDataForDevIdAndDevType(devId, devType);
+  }
 }

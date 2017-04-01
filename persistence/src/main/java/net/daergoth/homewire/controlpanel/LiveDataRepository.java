@@ -97,4 +97,16 @@ public class LiveDataRepository extends CustomMongoRepository {
 
     return new LiveDataEntity(deviceId, deviceType, valueDoc.getDouble("value").floatValue());
   }
+
+  public void removeCurrentDeviceDataForDevIdAndDevType(Short devId, String devType) {
+    Document filter = new Document()
+        .append("type", devType);
+
+    Document update = new Document()
+        .append("$unset", new Document()
+            .append("values." + devId, "")
+        );
+
+    collection.updateOne(filter, update);
+  }
 }

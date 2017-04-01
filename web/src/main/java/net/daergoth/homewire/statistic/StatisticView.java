@@ -190,14 +190,13 @@ public class StatisticView extends VerticalLayout implements View {
 
     Button toExportButton = new Button("Export", event -> {
       DeviceViewDTO selectedDto = (DeviceViewDTO) devicesComboBox.getValue();
-      String createdFilePath =
+      fileName[0] =
           statisticDeviceDataService.exportDataToCsv(selectedDto.getDevId(), selectedDto.getType(),
               selectedDto.getName());
 
-      if (!createdFilePath.isEmpty()) {
-        fileName[0] = createdFilePath;
+      if (!fileName[0].isEmpty()) {
         windowRoot
-            .addComponent(new Link("Download CSV", new FileResource(new File(createdFilePath))));
+            .addComponent(new Link("Download CSV", new FileResource(new File(fileName[0]))));
       } else {
         windowRoot.addComponent(new Label("Export failed! Please Try again!"));
       }

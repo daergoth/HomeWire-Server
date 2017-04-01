@@ -297,4 +297,11 @@ public class StatisticDataRepository extends CustomMongoRepository {
     return result;
   }
 
+  public void removeStatsForDevIdAndDevType(Short devId, String devType) {
+    Document filter = new Document()
+        .append("dev_id", devId)
+        .append("type", devType);
+
+    collection.deleteMany(filter);
+  }
 }
