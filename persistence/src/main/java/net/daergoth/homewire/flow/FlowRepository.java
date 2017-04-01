@@ -35,12 +35,17 @@ public class FlowRepository extends CustomMongoRepository {
   public void saveFlow(FlowEntity flowEntity) {
 
     if (flowEntity.getId() == null) {
-      Integer nextId = collection.find()
+      Integer nextId;
+      Document lastFlow = collection.find()
           .projection(new Document("flow_id", 1))
           .sort(new Document("flow_id", -1))
           .limit(1)
-          .first()
-          .getInteger("flow_id") + 1;
+          .first();
+      if (lastFlow == null) {
+        nextId = 1;
+      } else {
+        nextId = lastFlow.getInteger("flow_id") + 1;
+      }
 
       flowEntity.setId(nextId);
     }

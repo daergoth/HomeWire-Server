@@ -26,7 +26,6 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
 
   public static class RelayWidget extends RefreshableWidget<Float> {
     private Label titleLabel;
-    private Label statusLabel;
     private Label typeLabel;
     private NativeButton statusButton;
 
@@ -34,17 +33,15 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
       titleLabel = new Label(title);
       titleLabel.setPrimaryStyleName("live-widget-title");
 
-      statusLabel = new Label("Off");
-      statusLabel.setPrimaryStyleName("live-widget-data");
-
       statusButton = new NativeButton("Off", event -> {
         netServer.sendDeviceCommand(
             new DeviceCommand(
                 devId,
-                this.statusLabel.equals("On") ? 0f : 1f
+                (Boolean) this.statusButton.getData() ? 0f : 1f
             )
         );
       });
+      statusButton.setData(false);
       statusButton.setPrimaryStyleName("relay-widget-button");
 
       typeLabel = new Label("Relay");
@@ -60,7 +57,8 @@ public class RelayWidgetFactory implements CustomWidgetFactory {
 
     @Override
     public void refresh(Float value) {
-      statusButton.setCaption(value < 1e-5 ? "Off" : "On");
+      statusButton.setCaption(value > 1e-5 ? "On" : "Off");
+      statusButton.setData(value > 1e-5);
     }
 
     @Override

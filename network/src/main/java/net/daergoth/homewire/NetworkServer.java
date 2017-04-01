@@ -40,9 +40,13 @@ public class NetworkServer extends Thread {
   }
 
   public void sendDeviceCommand(DeviceCommand command) {
-    logger.info("Sending device command: {}", command.toString());
 
-    commandList.add(command);
+    if (!commandList.contains(command)) {
+      logger.info("Sending device command: {}", command.toString());
+      commandList.add(command);
+    } else {
+      logger.info("Command won't be sent: same command already in buffer!");
+    }
   }
 
   @Override
