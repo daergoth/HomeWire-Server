@@ -67,6 +67,7 @@ public class NetworkServer extends Thread {
           logger.info("Sending command: {}", command.toString());
 
           String json = objectMapper.writeValueAsString(command);
+          json += "\r\n";
 
           logger.info("json: {}", json);
 
